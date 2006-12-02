@@ -1,0 +1,440 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE"
+ content="text/html; charset=iso-8859-1">
+  <title>Developing JJack Clients</title>
+  <meta name="GENERATOR" content="OpenOffice.org 1.0  (Linux)">
+  <meta name="AUTHOR" content="Jens Gulden">
+  <meta content="Jens Gulden" name="author">
+</head>
+<body lang="de-DE">
+<h1><a name="mozTocId582257" class="mozTocH1"></a>Developing JJack
+Clients<br>
+</h1>
+<p style="margin-bottom: 0cm;">This document roughly describes how to
+develop <a href="http://jackit.sourceforge.net/">JACK</a> clients in
+the <a href="http://java.sun.com/">Java</a> programming language using
+the <a href="api/index.html">JJack API</a>.<br>
+</p>
+<p style="margin-bottom: 0cm;">Copyright &copy; Jens
+Gulden<span style="text-decoration: none;"></span>.<br>
+Licensed under the <a target="_blank"
+ href="http://www.gnu.org/licenses/lgpl.html">GNU
+Lesser General Public License (LGPL)</a>.</p>
+<p style="margin-bottom: 0cm;">This software comes with NO WARRANTY.
+See file <a href="../license.txt">license.txt</a> for details.</p>
+<hr>
+<div id="Inhaltsverzeichnis1"
+ style="background: transparent none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial;">
+<div id="Inhaltsverzeichnis1_Head">
+<p style="margin-top: 0.42cm; page-break-after: avoid;"><font
+ face="Albany, sans-serif"><font size="4" style="font-size: 16pt;"><b>CONTENTS<br>
+</b></font></font></p>
+<ol id="mozToc">
+<!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6-->
+</ol>
+<p style="margin-left: 0.5cm; margin-bottom: 0cm;"><a
+ href="#mozTocId361719">SINGLE
+CLIENTS</a>
+</p>
+<p style="margin-left: 0.5cm; margin-bottom: 0cm;"><a
+ href="#mozTocId602933">INTERCONNECTABLE
+CLIENTS</a>
+</p>
+<p style="margin-left: 0.5cm; margin-bottom: 0cm;"><a
+ href="#mozTocId940849">USING
+JJACK CLIENTS AS JAVABEANS</a>
+</p>
+<br>
+</div>
+</div>
+<hr>
+<h2><a name="mozTocId361719" class="mozTocH2"></a>SINGLE CLIENTS</h2>
+<h3><a name="mozTocId570401" class="mozTocH3"></a>Process method</h3>
+<p>The most simple kind of JJack client is any Java class that
+implements interface <code>de.gulden.framework.jjack.JJackAudioProcessor</code>.
+There is only a single method that needs to be implemented:</p>
+<code>import de.gulden.framework.jjack.*;<br>
+<br>
+public class MyJJackClient extends ... <b>implements
+JJackAudioProcessor</b> {<br>
+<br>
+&nbsp;&nbsp;&nbsp; ...<br>
+<br>
+&nbsp;&nbsp;&nbsp; /**<br>
+</code><code>&nbsp; &nbsp;&nbsp; * Process multiple samples from input
+buffer to output buffer.<br>
+&nbsp;&nbsp;&nbsp; &nbsp;* @param e event object with references to
+input buffer and output buffer.<br>
+&nbsp;&nbsp;&nbsp; &nbsp;*/<br>
+<br>
+&nbsp;&nbsp;&nbsp; <b>public void process(JJackAudioEvent e)</b> {<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ... code to create,
+manipulate or analyse audio waveform ...<br>
+&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp; ...<br>
+}<br>
+</code>
+<h3><a name="mozTocId724956" class="mozTocH3"></a>Accessing audio data</h3>
+<p>Access to audio data is handled through buffers of type <a
+ href="http://java.sun.com/j2se/1.4.2/docs/api/java/nio/FloatBuffer.html"><code>java.nio.FloatBuffer</code></a>.
+There is one FloatBuffer for each input channel, and one for each
+output channel.</p>
+<p>Each time the <code>process()</code>-method is called, a number of
+audio samples is passed via the input and output buffers of the <code>JJackAudioEvent</code>.
+The number of samples may differ each call. The output buffer is
+expected to be filled with exactly the same number of samples as passed
+in via the input buffer.</p>
+<p>It is up to the client whether it uses values of the input data to
+generate an output waveform, or to completely ignore outputs (as
+clients would do
+that only monitor incoming data) or inputs (as clients that create
+audio data would do).</p>
+<p>There are two options for accessing the FloatBuffers of input and
+output ports:<br>
+</p>
+<ol>
+  <li>
+    <p>access the buffers directly by their index number, via methods <code>JJackAudioEvent.getInput(index)</code>
+and <code>JJackAudioEvent.getOutput(index)</code>.</p>
+  </li>
+  <li>
+    <p>access the buffers indirectly through the channel model that
+comes
+with JJack:<br>
+    <code>JJackAudioChannel ch = audioEvent.getChannel( 0 );<br>
+JJackAudioPort port = ch.getPort( JJackConstants.INPUT );<br>
+FloatBuffer buf = port.getBuffer();</code><br>
+    </p>
+  </li>
+</ol>
+<p></p>
+<h3><a name="mozTocId229906" class="mozTocH3"></a>Audio data format</h3>
+Note that in the JACK world audio waveform data is represented as
+floating-point values of type <code>float</code>:<br>
+<ul>
+  <li>The amplitude range<b> </b>is<b> <code>-1.0f</code> </b>to<b> <code>+1.0f</code></b><code>.</code></li>
+</ul>
+This makes it possible for JACK and its clients to handle data
+independently from the bit-reslution of the underlying audio hardware.
+It also prevents several steps of conversion between <code>int</code>
+and <code>float</code> values when passing audio data from one client
+to another.<br>
+<h3><a name="mozTocId174263" class="mozTocH3"></a>Examples</h3>
+<p>A typical <code>process()</code>-method loops over all channels
+available, and performs its operation by subsequently reading data from
+the input buffers and writing data to the output buffers. </p>
+<p>The following example is taken from the Gain-client (class <a
+ href="../src/de/gulden/application/jjack/clients/Gain.java"><code>de.gulden.application.jjack.clients.Gain</code></a>),
+included in JJack's distribution archive:</p>
+<p><code>&nbsp;&nbsp;&nbsp; public void process(JJackAudioEvent e) {<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; float v = getVolume();<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; for (int i=0;
+i&lt;e.countChannels(); i++) {<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; FloatBuffer in
+= e.getInput(i);<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; FloatBuffer
+out = e.getOutput(i);<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; int cap =
+in.capacity();<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; for (int j=0;
+j&lt;cap; j++) {<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; float a = in.get(j);<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; a *= v;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; if (a&gt;1.0) {<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; a = 1.0f;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; } else if (a&lt;-1.0) {<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; a = -1.0f;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; out.put(j, a);<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp; }&nbsp;&nbsp;&nbsp; <br>
+</code><br>
+The second example originates from the Delay-client (class <a
+ href="../src/de/gulden/application/jjack/clients/Delay.java"><code>de.gulden.application.jjack.clients.Delay</code></a>),
+also included in the distribution archive:</p>
+<code>&nbsp;&nbsp;&nbsp; public void process(JJackAudioEvent e) {<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; int delaytime = getTime();<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; float mixSignal =
+(float)getMixSignal() / 100;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; float mixFx = (float)getMixFx() /
+100;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; float outSignal =
+(float)getOutSignal() / 100;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; float outFx = (float)getOutFx() /
+100;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; int sampleRate = getSampleRate();<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; int diff = delaytime * sampleRate
+/ 1000 ;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; int channels = e.countChannels();
+// number of channels (assumes same number of input and output ports)<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; if (ring == null) { // first
+call, init ringbuffers for each channel<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; ring =
+new RingFloat[channels];<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; for
+(int i = 0; i &lt; channels; i++) {<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;
+&nbsp;&nbsp;&nbsp; ring[i] = new RingFloat(diff);<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; }<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; for (int i=0; i &lt; channels;
+i++) {<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; RingFloat r =
+ring[i];<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+r.ensureCapacity(diff);<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; FloatBuffer in
+= e.getInput(i);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // input buffer<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; FloatBuffer
+out = e.getOutput(i); // output buffer<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; int cap =
+in.capacity(); // number of samples available<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; for (int j=0;
+j&lt;cap; j++) {<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; float signal = in.get(j); // read input signal<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; float fx = r.get(diff);<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; float mix = signal * mixSignal + fx * mixFx;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; float ou = signal * outSignal + fx * outFx;<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; r.put(mix); // remember for delay <br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; out.put(j, ou); // write output signal<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp; }<br>
+</code>
+<p>This example uses the channels&amp;ports-model of the JJack API (via
+interfaces <code>de.gulden.framework.jjack.JJackAudioChannel</code>
+and&nbsp; <code>de.gulden.framework.jjack.JJackAudioPort</code>) to
+access the buffers:</p>
+<code>&nbsp;&nbsp;&nbsp; public void process(JJackAudioEvent e) {</code><code></code><br>
+<code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...</code><code></code><br>
+<code><br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; for (Iterator it =
+e.getChannels().iterator(); it.hasNext(); ) { // iterate over all
+channels available</code><br>
+<code></code><code>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; JJackAudioChannel ch = (JJackAudioChannel)it.next();</code><br>
+<code>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+FloatBuffer in = ch.getPortBuffer(INPUT);</code><br>
+<code>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+FloatBuffer out = ch.getPortBuffer(OUTPUT);</code><br>
+<code>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; for (int
+i=0; i&lt;in.capacity(); i++) {<br>
+<br>
+</code><code>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; ...</code><code><br>
+<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; }</code><br>
+<p><code>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; }</code><br>
+<code>&nbsp;&nbsp;&nbsp; }</code><br>
+<code></code></p>
+<h3><a name="mozTocId511978" class="mozTocH3"></a>Registering the
+processor at the underlying JJack system</h3>
+<p>To link your JJack client into the audio processing chain, an
+instance of it must be registered at the underlying JJack system. This
+can e.g. be done inside the <code>main(String[] args)</code>-method of
+your application:</p>
+<code>&nbsp;&nbsp;&nbsp; MyJJackClient myClient = new MyJJackClient();<br>
+<br>
+&nbsp;&nbsp;&nbsp; JJackSystem.setProcessor(myClient); // make audio
+data "flow" through myClient (by subsequent calls to process(..)-method)</code><br>
+<br>
+Note: Class <code>de.gulden.framework.jjack.JJackSystem</code>
+implements the underlying JJack system. By the time of <i>static class
+initilization</i>, that means when the class is <i>accessed for the
+first time</i> by Java's class loader, the main work of native
+initialization is performed. The two main steps are:<br>
+<ul>
+  <li>Load the native library <code>libjjack.so</code>, which
+implements the native interface methods of <code>JJackSystem</code>.
+(To make sure the Java runtime environment can find the native library
+file, set the Java system property <code>java.library.path</code>. See
+    <a href="jjack.html#Library_Path">JJack manual, Environment,
+Library Path</a>.)<br>
+  </li>
+  <li>Register a native JACK client, which then can be connected to
+other JACK clients outside the Java vitrual machine using tools like <code>jack_connect</code>
+or <code>qjackctl</code>. (Note that the JJack system can also
+autoconnect itself to physical ports on startup. See <a
+ href="jjack.html#JJACK_SYSTEM_PROPERTIES">JJack manual, JJack System
+Properties</a>)<br>
+  </li>
+</ul>
+<p>Note that, depending on the threads-architecture of your system, it
+might be necessary to let these initialization procedures be performed
+from the main shell thread (the thread which initially enters the <code>main(String[]
+args)</code>-method). To force this, perform a dummy-access to <code>JJackSystem</code>
+from the main-method:<br>
+</p>
+<code>public static void main(String[] args) {</code><br>
+<code>&nbsp;&nbsp;&nbsp; ...<br>
+<br>
+&nbsp;&nbsp;&nbsp;
+Class.forName("de.gulden.framework.jjack.JJackSystem"); // dynamically,
+class name as String<br>
+<br>
+&nbsp;&nbsp;&nbsp; <i>or e.g.<br>
+<br>
+</i>&nbsp;&nbsp;&nbsp; JJackSystem.class.getName(); // statically,
+dummy call<br>
+<br>
+&nbsp;&nbsp;&nbsp; ...<br>
+}<br>
+</code>
+<p>(This thread-behaviour is also the reason why in some cases, when
+deploying JJack clients as JavaBeans, it is necessary to start up the
+BeanBuilder through the JJackSystem wrapper. See <a
+ href="jjack-beanbuilder.html">Creating JJack Clients with the
+BeanBuilder</a>.)<br>
+</p>
+<h3><a name="mozTocId424518" class="mozTocH3"></a>Purposes of audio
+processor clients<br>
+</h3>
+There are three basic purposes for which a JJack client can be
+developed:
+<ol>
+  <li><b>C</b><b>reating audio</b> waveform data. Such a client could
+e.g. be a sample player, mp3-decoder, synthesizer etc.<br>
+  </li>
+  <li><b>C</b><b>hanging audio</b> data, e.g. by amplifying the signal
+or putting any effect on it.<br>
+  </li>
+  <li><b>Analyze audio</b> data, that means, performing some monitoring
+function on incoming data without generating a signal at all.<br>
+  </li>
+</ol>
+<p>When implementing the <code>process()</code>-method, the purpose of
+a JJack client is reflected only in the way it handles incoming and
+outgoing data. A client that is creating its own audio data will most
+likely never
+call <code>JJackAudioEvent.getInputBuffer(..)</code>, while on the
+other hand a purely monitoring client has no use in calling <code>JJackAudioEvent.getOutputBuffer(..)</code>
+(or performing the corresponding actions on a <code>JJackAudioChannel</code>
+object).<br>
+</p>
+<p>Also for a native JACK client, there is no explicit difference
+between clients that are creating, changing or analyzing audio.
+Usually,
+an audio-creating client does not register any input ports, while a
+monitor client does not need output ports. To achieve the same
+behaviour for JJack clients, tell the JJack system explicitly how many
+input and output ports to register. This can either be done by passing
+a Java runtime property from the command line (e.g. <code>-Djjack.ports.output=0</code>,
+see <a
+ href="jjack.html#JJACK_SYSTEM_PROPERTIES">JJack
+manual, JJack System Properties</a>), or by setting these properties
+programmatically before class <code>de.gulden.framework.jjack.JJackSystem</code>
+is accessed for the very first time:</p>
+<code>public static void main(String[] args) {</code><br>
+<code>&nbsp;&nbsp;&nbsp; ...</code><br>
+<code>&nbsp;&nbsp;&nbsp; System.setProperty("jjack.ports.input", "0");
+// no inputs, mark this as an audio-creating client only</code><br>
+<code></code><code>&nbsp;&nbsp;&nbsp; ...<br>
+&nbsp;&nbsp;&nbsp; (perform rest of initialization, first access to
+JJackSystem)<br>
+</code><code></code><code>}</code><br>
+<h2><a name="mozTocId602933" class="mozTocH2"></a><code></code><code></code>INTERCONNECTABLE
+CLIENTS</h2>
+<p>The JJack API proposes three event-driven mechanisms to interconnect
+audio processing clients with each other:<br>
+</p>
+<ul>
+  <li><i>Chaining</i> several JJack clients together, by appending each
+other via the <code>chained</code>-event-source of a <code>de.gulden.framework.jjack.</code><code>JJackMonitor</code>
+or <code>de.gulden.framework.jjack.</code><code>JJackClient</code>
+(method <code>setChained(..)</code>).<br>
+  </li>
+  <li><i>Monitoring</i> a client by adding any number of monitoring
+clients via the <code>monitor</code>-event-source (method <code>addMonitor(..)</code>).</li>
+  <li><i>Supervising</i> the processing state of other clients through
+the <code>de.gulden.framework.jjack.JJackProcessListener</code>
+interface. This last option is usually used for internal control or
+debugging purposes, not for building audio processor clients.<br>
+  </li>
+</ul>
+<p></p>
+<p>(Note that these mechanisms of interconnection are working inside
+the
+Java virtual machine only and have nothing to do with connections
+between <i>native</i> JACK clients, as configured using tools like <code>jack_connect</code>
+or <code>qjackctl</code>. To the outside, each Java virtual machine
+running a JJack system appears as one single native JACK client.)<br>
+</p>
+<p>The event-sources and methods mentioned above are further described
+in the <a href="api/index.html">JJack
+Javadoc API documentation</a>.</p>
+<h2><a name="mozTocId940849" class="mozTocH2"></a>USING JJACK CLIENTS
+AS JAVABEANS</h2>
+<h3><a name="mozTocId548340" class="mozTocH3"></a>JJack and the
+JavaBeans API</h3>
+<p>JJack clients fit well into the JavaBeans concept for two main
+reasons:<br>
+</p>
+<ul>
+  <li>The <a href="http://java.sun.com/products/javabeans/">JavaBeans
+API</a> generally models features of components that get interconnected
+to form a new component as a whole. This is exactly the same idea as
+the approach of interconnecting audio processors to form a more complex
+audio processor together.</li>
+  <li>The way of interconnecting JJack clients is implemented in a
+JavaBeans-compatible way (see above, <a
+ href="#INTERCONNECTABLE_MULTI-PROCESSOR-CLIENTS">Interconectable
+Multi-Processor-Clients</a>). This way, any development tool that is
+capable&nbsp; of designing interconnected JavaBeans can be used to
+create combined JJack clients as well.</li>
+</ul>
+<h3><a name="mozTocId986213" class="mozTocH3"></a>The BeanBuilder
+development tool</h3>
+<p>One JavaBeans-compatible development tool that has been tested with
+JJack is the <a
+ href="http://java.sun.com/products/javabeans/beanbuilder/index.jsp">BeanBuilder</a>,
+available for free from <a href="http://www.sun.com/">Sun
+Microsystems</a>. See the documentation about <a
+ href="jjack-beanbuilder.html">Creating JJack clients with the
+BeanBuilder</a> for a detailed description.</p>
+<h3><a name="mozTocId112194" class="mozTocH3"></a>Programming JJack
+clients as JavaBeans</h3>
+<p>Any Java class can be treated as a JavaBean, as long as it is
+serializable and provides a BeanInfo-class. See the <a
+ href="http://java.sun.com/products/javabeans/">JavaBeans API</a> for
+details. <br>
+</p>
+<p>Every Java class that extends <code>javax.swing.JPanel</code>
+and implements <code>java.io.Serializable</code> as well as <code>de.gulden.framework.jjack.JJackAudioConsumer|</code><code>JJackAudioProducer</code>
+is both a visible JavaBean component and a JJack client. <br>
+</p>
+<p>However, it is useful to derive Bean-compatible JJack clients from
+either <code>de.gulden.framework.jjack.JJackMonitor</code> or <code>de.gulden.framework.jjack.JJackClient</code>.
+Using one of these as the superclass reduces work for implementing a
+new JJack client.See the <a
+ href="api/index.html">JJack
+Javadoc API documentation</a> for details.<br>
+</p>
+<p align="left"></p>
+<p align="left"></p>
+<p align="left"></p>
+<p align="left"></p>
+<p align="right"><small><small><font size="2"><small><small>Copyright
+&copy; Jens Gulden 2004<br>
+Licensed under the LGPL.<br>
+</small></small></font></small></small></p>
+</body>
+</html>

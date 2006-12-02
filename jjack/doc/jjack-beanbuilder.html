@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE"
+ content="text/html; charset=iso-8859-1">
+  <title>Creating JJack Clients with the BeanBuilder</title>
+  <meta name="GENERATOR" content="OpenOffice.org 1.0  (Linux)">
+  <meta name="AUTHOR" content="Jens Gulden">
+  <meta content="Jens Gulden" name="author">
+</head>
+<body lang="de-DE">
+<h1>Creating JJack Clients with the BeanBuilder<br>
+</h1>
+<p style="margin-bottom: 0cm;">This document describes how JJack
+clients are created and used by means of the <a
+ href="http://java.sun.com/products/javabeans/beanbuilder/index.jsp">BeanBuilder</a>
+development tool from <a href="http://www.sun.com/">Sun Microsystems</a>.
+Refer to the <a href="jjack.html">JJack documentation</a> for
+general information about JJack and on alternative ways to deploy JJack
+clients.<br>
+</p>
+<p style="margin-bottom: 0cm;">Copyright &copy; Jens
+Gulden<span style="text-decoration: none;"></span>.<br>
+Licensed under the <a target="_blank"
+ href="http://www.gnu.org/licenses/lgpl.html">GNU
+Lesser General Public License (LGPL)</a>.</p>
+<p style="margin-bottom: 0cm;">This software comes with NO WARRANTY.
+See file <a href="../license.txt">license.txt</a> for details.</p>
+<hr>
+<div id="Inhaltsverzeichnis1"
+ style="background: transparent none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial;">
+<div id="Inhaltsverzeichnis1_Head">
+<p style="margin-top: 0.42cm; page-break-after: avoid;"><font
+ face="Albany, sans-serif"><font size="4" style="font-size: 16pt;"><b>CONTENTS<br>
+</b></font></font></p>
+<p style="margin-left: 0.5cm; margin-bottom: 0cm;"><a
+ href="#INSTALLING_THE_BEANBUILDER">INSTALLING THE BEANBUILDER</a><br>
+</p>
+<p style="margin-left: 0.5cm; margin-bottom: 0cm;"><a
+ href="#RUNNING_THE_BEANBUILDER_WITH_JJACK">RUNNING THE BEANBUILDER
+WITH JJACK SUPPORT</a><br>
+</p>
+<p style="margin-left: 0.5cm; margin-bottom: 0cm;"><a
+ href="#CONFIGURING_A_SINGLE_JJACK_CLIENT">CONFIGURING A SINGLE JJACK
+CLIENT</a><br>
+</p>
+<p style="margin-left: 0.5cm; margin-bottom: 0cm;"><a
+ href="#USING_MULTIPLE_INTERCONNECTED_JJACK">USING MULTIPLE
+INTERCONNECTED JJACK CLIENTS</a><br>
+</p>
+<br>
+</div>
+</div>
+<hr>
+<h2><a name="INSTALLING_THE_BEANBUILDER"></a>INSTALLING THE BEANBUILDER</h2>
+<p>The <a
+ href="http://java.sun.com/products/javabeans/beanbuilder/index.jsp">BeanBuilder</a>
+is a Java development tool by <a href="http://www.sun.com/">Sun
+Microsystems</a>. It can be downloaded
+for free
+at <a
+ href="http://java.sun.com/products/javabeans/beanbuilder/index.jsp">http://java.sun.com/products/javabeans/beanbuilder/index.jsp</a>.
+As with most Java programs, no installation is necessary - just unpack
+the files into their own directory and run the startup script <code>run.sh</code>
+to test the BeanBuilder. The application will appear looking
+like this:</p>
+<p><img src="img/beanbuilder_nojjack.png" alt="" width="600"
+ height="450"><br>
+</p>
+<p><br>
+Load the set of example JJack-clients from file <code>&lt;JJack-home&gt;/lib/jjack-clients.jar</code>,
+by choosing "File / Load archive..." from the menu:<br>
+</p>
+<p><img src="img/beanbuilder_loadjar.png" alt="" width="437"
+ height="249"><br>
+</p>
+<p><br>
+After the JJack clients have been loaded, a new sheet in the
+BeanBuilder-toolbar appears:<br>
+</p>
+<p><img src="img/beanbuilder_loadjar_palette.png" alt="" width="600"
+ height="173"><br>
+</p>
+<p><br>
+Now try to add a <code>Socket</code> client to the Bean
+construction panel. Click the Socket-button in the toolbar (<img
+ src="img/socket-small.png" alt="" width="26" height="6">),
+then
+click somewhere into the empty Bean-panel to place an instance of <code>Socket</code>
+there. <i>The underlying native JJack system may crash at this point,
+because
+it gets initialized too late</i>. See
+next chapter on how the BeanBuilder is run with support for JJack
+clients.<br>
+</p>
+<h2><a name="RUNNING_THE_BEANBUILDER_WITH_JJACK"></a>RUNNING THE
+BEANBUILDER WITH JJACK SUPPORT<br>
+</h2>
+<p>This section describes how the BeanBuilder is started with
+preconfigured
+JJack support, having the example JJack-clients available in the
+toolbar.</p>
+<p>These points are to be taken care of:<br>
+</p>
+<ul>
+  <li>
+    <p>The JJack API classes in archive <code>lib/jjack.jar</code>
+must be present on the system classpath to be able to load JJack
+clients inside the BeanBuilder (as seen above).</p>
+  </li>
+  <li>
+    <p>To prevent the application from crashing when the first JJack
+Bean is instantiated, it is necessary on some systems to register the
+native JACK client of the underlying JJack system as early as possible,
+before actually starting up the BeanBuilder. This can be
+achieved by using the JJackSystem wrapper, see <a
+ href="#RUNNING_THE_BEANBUILDER_WITH_JJACK">Running
+the BeanBuilder
+with JJack support</a> for
+details.</p>
+  </li>
+  <li>As a matter of convenience, the BeanBuilder can be pre-configured
+with a toolbar that already contains the JJack example clients on
+startup. This is done by passing a suitable "palette"-file as a
+parameter and adding the JJack example clients in archive <code>lib/jjack-client.jar</code>
+to the system classpath.<br>
+  </li>
+</ul>
+<p>JJack's distribution archive contains a startup script for the
+BeanBuilder which takes care of these extensions. The script is <code>bin/runBeanBuilder.sh</code>.
+Make sure all paths used in this script are set correctly (<code>JJACK_HOME</code>,
+<code>BB_HOME</code> and <code>JAVA_HOME</code>), and that the JACK
+daemon is running on your system. Then invoke <code>runBeanBuilder.sh</code>.
+The application will start up with the JJack example clients available
+on the toolbar:<br>
+</p>
+<p><img src="img/beanbuilder_jjack.png" alt="" width="600" height="450"><br>
+</p>
+<p><br>
+Again try to add a <code>Socket</code> client to the Bean
+construction panel. The application should no longer crash.<br>
+</p>
+<h3>Connecting the native JACK client</h3>
+<p>To find out if the native JACK client of the JJack system has
+successfully been registered, start a JACK connection manager
+application. (One of such applications is <code>qjackctl</code>, an
+alternative tool is the command-line-controlled <code>jack_connect</code>.)
+If everything works
+fine, a JACK client named "JJack" appears in the list of available
+clients:<br>
+</p>
+<p><img src="img/qjackctl.png" alt="" width="320" height="226"><br>
+</p>
+<p><br>
+To test your JJack clients with audio data, connect JJack's input
+ports to some audio source. The example below show the <code>xmms</code>
+media player as input to JJack, and the system's 'physical' ALSA audio
+output device fed by JJack's output:<br>
+</p>
+<p><img src="img/qjackctl_connected.png" alt="" width="320" height="155"><br>
+</p>
+<h2><a name="CONFIGURING_A_SINGLE_JJACK_CLIENT"></a>CONFIGURING A
+SINGLE JJACK CLIENT</h2>
+<p>After the native JJack client is registered and the BeanBuilder has
+started up, you can start constructing a JJack client inside the
+BeanBuilder.<br>
+</p>
+<p>1. First <b>pick the <code>Socket</code> Bean</b> and place it on
+the
+blank Bean-panel:<br>
+</p>
+<p><img src="img/socket_button.png" alt="Socket Bean button" width="162"
+ height="95"><br>
+</p>
+<p><img src="img/beanbuilder_socket.png" alt="" width="600" height="450"><br>
+</p>
+<p>(A Socket client is always needed as the first element of a
+Bean-built JJack client, because it provides access to the underlying
+JJack system and lets the actual audio processor client connect to the
+JJack system.)<br>
+</p>
+<p>2. Now <b>choose a JJack client from the
+toolbar</b> palette by clicking its button, and place it onto the
+Bean-panel. The example shows the <code>Gain</code> client put onto
+the Bean-panel:</p>
+<img src="img/beanbuilder_gain.png" alt="" width="600" height="450"><br>
+<br>
+<p>3. The last step is to <b>connect the client to the <code>Socket</code></b>,
+in order to make the audio data 'flow' through the <code>Gain</code>
+client (which means making the <code>process()</code>-method be called
+regularly, subsequently delivering audio events). This is done by
+drawing a
+property connection from the <code>Gain</code> client to the <code>Socket</code><code>Gain</code>
+client, and selecting the "<code>chained</code>"-property
+of the <code>Socket</code> to be set:<br>
+</p>
+<p><img src="img/beanbuilder_gain_connect1.png" alt="" width="600"
+ height="450"><br>
+</p>
+<p><img src="img/beanbuilder_gain_connect2.png" alt="" width="600"
+ height="450"></p>
+<p>(Note: The BeanBuilder does not support connecting Beans to each
+other as event listeners, and without generating proxy classes. So the
+way
+to connect clients to each other is to set them
+as each other's <i>properties</i>, not event listeners.)<br>
+</p>
+<p>The result is a a green arrow shown in design mode, that indicates
+that the two beans are interconnected:</p>
+<img src="img/beanbuilder_gain_connect3.png" alt="" width="600"
+ height="450"><br>
+<p>Finally, switch from design mode to runtime mode by unchecking the
+checkbox "Design Mode" on the right:<br>
+</p>
+<p><img src="img/beanbuilder_gain_connect4.png" alt="" width="600"
+ height="450"><br>
+</p>
+<p>The JJack client Bean is now ready to use:<br>
+</p>
+<p><img src="img/beanbuilder_gain_bean.png"
+ alt="Gain Bean in runtime mode" width="308" height="328"><br>
+<br>
+</p>
+<h2><a name="USING_MULTIPLE_INTERCONNECTED_JJACK"></a>USING MULTIPLE
+INTERCONNECTED JJACK CLIENTS</h2>
+Multiple JJack clients can be put onto the Bean-panel and be
+interconnected just the same way as described above with a single
+client.<br>
+<p>To let more than one client influence the audio signal stream,
+connect another client to the previous one via the "<code>chained</code>"-property.
+To let monitor-clients analyze the signal without changing it, connect
+them via the "<code>monitor</code>"-property and its "<code>addMonitor(..)</code>"-method.</p>
+The following example shows a chain of the <code>Gain</code> client
+and the <code>Delay</code> client. Behind each client, an <code>Oscillator</code>
+monitor-client is conected to display the signals:<br>
+<p><img height="450" width="600" alt=""
+ src="img/beanbuilder_interconnect.png"><br>
+</p>
+<p>Switching to runtime mode makes this JJack client Bean ready to use:<br>
+</p>
+<p><img height="450" width="600" alt=""
+ src="img/beanbuilder_interconnect_runtime.png"><br>
+</p>
+<p align="left"></p>
+<p align="left"></p>
+<p align="left"></p>
+<p align="left"></p>
+<p align="right"><small><small><font size="2"><small><small>Copyright
+&copy; Jens Gulden 2004<br>
+Licensed under the LGPL.<br>
+</small></small></font></small></small></p>
+</body>
+</html>

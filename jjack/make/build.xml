@@ -1,0 +1,194 @@
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    ANT build script for JJack.
+   
+    Environment: ANT 1.5,  J2SDK 1.4, gcc 3.3, Linux.
+    Other configurations may or may not work.
+   
+    Copyright (c) Jens Gulden 2004-2006
+    Licensed under the GNU Lesser General Public License (LGPL).
+    This comes with NO WARRANTY, see file License.txt.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+<project name="jjack" default="all" basedir="/home/jgulden/workspace/jjack">
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    Main target to build JJack.
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <target name="all" depends="clean, init, javac, javadoc, javah, gcc, jars">
+    <echo message="Ok."/>
+  </target>
+
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    Clean everything so that only files from CVS remain in the project basedir
+    (except directory '_internal').
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <target name="clean">
+    <!-- clean for target 'javac' -->
+    <delete dir="classes" failonerror="false"/>
+    <!-- clean for target 'javah' -->
+    <delete file="src/de/gulden/framework/jjack/libjjack.h" failonerror="false"/>
+    <!-- clean for targets 'gcc' and 'jars' -->
+    <delete dir="lib" failonerror="false"/>
+    <!-- clean for target 'javadoc' -->
+    <delete dir="doc/api" failonerror="false"/>
+  </target>
+
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    Initialize global properties.
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <target name="init">
+    <property name="JAVA_HOME"  location="/usr/java/java"/>
+    <property name="TMP"  location="/tmp"/>
+  </target>
+
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    Compile Java classes.
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <target name="javac" depends="init">
+    <mkdir dir="classes"/>
+    <javac destdir="classes" debug="on">
+      <src path="src"/>
+      <include name="de/gulden/framework/jjack/**"/>
+      <exclude name="de/gulden/framework/jjack/examples/**"/>
+      <include name="de/gulden/application/jjack/**"/>
+      <include name="JJack.java"/>
+      <include name="JJackSystem.java"/>
+      <include name="de/gulden/util/Toolbox.java"/>
+      <include name="de/gulden/util/swing/DefaultMeterModel.java"/>
+      <include name="de/gulden/util/swing/LED.java"/>
+      <include name="de/gulden/util/swing/MeterModel.java"/>
+      <include name="de/gulden/util/swing/SliderLabeled.java"/>
+      <include name="de/gulden/util/swing/SpinButton.java"/>
+      <include name="de/gulden/util/swing/SpinButtonLabeled.java"/>
+      <include name="de/gulden/util/swing/VUMeter.java"/>
+      <include name="de/gulden/util/nio/FifoFloat.java"/>
+      <include name="de/gulden/util/nio/RingFloat.java"/>
+    </javac>
+        
+    <mkdir dir="classes/de/gulden/application/jjack/res"/>
+    <copy todir="classes/de/gulden/application/jjack/res">
+      <fileset dir="src/de/gulden/application/jjack/res"/>
+    </copy>  
+    <mkdir dir="classes/de/gulden/application/jjack/clients/res"/>
+    <copy todir="classes/de/gulden/application/jjack/clients/res">
+      <fileset dir="src/de/gulden/application/jjack/clients/res"/>
+    </copy>
+  </target>
+
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    Create header file libjjack.h
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <target name="javah" depends="init">
+    <!-- the javah ant task appears to be buggy under Ant1.5/j2sdk1.4.1/Linux, so call as executable -->
+    <!--<javah class="de.gulden.framework.jjack.JJackSystem" outputFile="de/gulden/framework/jjack/libjjack.h"/>-->
+    <exec executable="${JAVA_HOME}/bin/javah" dir="." failonerror="yes">
+      <arg value="-classpath"/>
+      <arg value="classes"/>
+      <arg value="-o"/>
+      <arg value="src/de/gulden/framework/jjack/libjjack.h"/>
+      <arg value="de.gulden.framework.jjack.JJackSystem"/>
+    </exec>
+  </target>
+
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    Compile libjjack.
+    This is the native bridge library implementing the native methods
+    declared by class de.gulden.framework.jjack.JJackSystem.
+    *** The configuration below is running on Linux with gcc 2.95.4,
+    *** other environments have not been tested.
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <target name="gcc" depends="init, javah">
+    <mkdir dir="lib/i386/linux"/>
+    <exec executable="gcc" dir="src/de/gulden/framework/jjack" failonerror="yes">
+      <arg value="-fPIC"/>
+      <arg value="-I/usr/java/java/include"/>
+      <arg value="-I/usr/java/java/include/linux"/>
+      <arg value="-I/usr/include/jack"/>
+      <arg value="-c"/>
+      <arg value="libjjack.c"/>
+    </exec>
+    <exec executable="gcc" dir="src/de/gulden/framework/jjack" failonerror="yes">
+      <arg value="-shared"/>
+      <arg value="-fPIC"/>
+      <arg value="-ljack"/>
+      <arg value="-o"/>
+      <arg value="../../../../../lib/i386/linux/libjjack.so"/>
+      <arg value="libjjack.o"/>
+    </exec>
+  </target>
+
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    Create jars.
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <target name="jars" depends="javac, gcc">
+    <!--<delete file="lib/jjack.jar" failonerror="no"/>
+    <delete file="lib/jjack-clients.jar" failonerror="no"/>-->
+    
+    <jar destfile="lib/jjack.jar" compress="false">
+      <fileset dir="classes" includes="de/gulden/framework/jjack/*.class" excludes="de/gulden/framework/jjack/examples/**/*"/>
+      <fileset dir="classes" includes="de/gulden/application/jjack/*.class"/>
+      <fileset dir="classes" includes="de/gulden/application/jjack/res/*.png"/>
+      <fileset dir="classes" includes="JJack.class"/>
+      <fileset dir="classes" includes="JJackSystem.class"/>
+      <fileset dir="classes" includes="de/gulden/util/Toolbox.class"/>
+      <manifest>
+        <attribute name="Main-Class" value="JJack"/>
+      </manifest>
+    </jar>
+     
+    <jar destfile="lib/jjack-clients.jar" compress="false">
+      <fileset dir="classes" includes="de/gulden/application/jjack/clients/**/*.class"/>
+      <fileset dir="classes" includes="de/gulden/application/jjack/clients/res/icons/*.png"/>
+      <fileset dir="classes" includes="de/gulden/util/**/*.class" excludes="de/gulden/util/Toolbox.class"/>
+      <manifest>
+        <section name="de/gulden/application/jjack/clients/Channel.class">
+          <attribute name="Java-Bean" value="True"/>
+        </section>
+        <section name="de/gulden/application/jjack/clients/Delay.class">
+          <attribute name="Java-Bean" value="True"/>
+        </section>
+        <section name="de/gulden/application/jjack/clients/Gain.class">
+          <attribute name="Java-Bean" value="True"/>
+        </section>
+        <section name="de/gulden/application/jjack/clients/Gate.class">
+          <attribute name="Java-Bean" value="True"/>
+        </section>
+        <section name="de/gulden/application/jjack/clients/Oscillator.class">
+          <attribute name="Java-Bean" value="True"/>
+        </section>
+        <section name="de/gulden/application/jjack/clients/Cable.class">
+          <attribute name="Java-Bean" value="True"/>
+        </section>
+        <section name="de/gulden/application/jjack/clients/Socket.class">
+          <attribute name="Java-Bean" value="True"/>
+        </section>
+        <section name="de/gulden/application/jjack/clients/VU.class">
+          <attribute name="Java-Bean" value="True"/>
+        </section>
+      </manifest>
+    </jar>
+  </target>
+
+  
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    Create Javadoc API documentation.
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <target name="javadoc" depends="javac">
+    <mkdir dir="doc/api"/>
+    <javadoc 
+        packagenames="de.gulden.framework.jjack.*" 
+        excludepackagenames="de.gulden.framework.jjack.clients.*,de.gulden.framework.jjack.examples.*" 
+        sourcepath="src" 
+        destdir="doc/api"
+        windowtitle="JJack"
+        doctitle="JJack&lt;/h2&gt;&lt;center&gt;Licensed under the &lt;a href='http://www.gnu.org/copyleft/lgpl.html' target='_blank'&gt;GNU Lesser General Public License&lt;/a&gt;.&lt;/center&gt;&lt;h2&gt;"
+        access="private"/>
+  </target>
+  
+</project>
