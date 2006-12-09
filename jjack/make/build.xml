@@ -9,7 +9,7 @@
     This comes with NO WARRANTY, see file License.txt.
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
-<project name="jjack" default="all" basedir="/home/jgulden/workspace/jjack">
+<project name="jjack" default="all" basedir="../">
 
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     Main target to build JJack.
