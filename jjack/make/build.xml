@@ -39,7 +39,8 @@
     Initialize global properties.
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <target name="init">
-    <property name="JAVA_HOME"  location="/usr/java/java"/>
+  	<property environment="env" />
+  	<property name="JAVA_HOME"  location="${env.JAVA_HOME}"/>
     <property name="TMP"  location="/tmp"/>
   </target>
 
@@ -106,8 +107,8 @@
     <mkdir dir="lib/i386/linux"/>
     <exec executable="gcc" dir="src/de/gulden/framework/jjack" failonerror="yes">
       <arg value="-fPIC"/>
-      <arg value="-I/usr/java/java/include"/>
-      <arg value="-I/usr/java/java/include/linux"/>
+      <arg value="-I${JAVA_HOME}/include"/>
+      <arg value="-I${JAVA_HOME}/include/linux"/>
       <arg value="-I/usr/include/jack"/>
       <arg value="-c"/>
       <arg value="libjjack.c"/>

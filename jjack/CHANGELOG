@@ -2,3 +2,4 @@ Version 0.2.X - Release date 2007-??-??
 -----------------------------------------------------
 
 - Relative basedir in build.xml
+- Use JAVA_HOME environment variable for ant build java dependencies. Example from shell: JAVA_HOME=/usr/lib/jvm/java-1.5.0-sun ant all
