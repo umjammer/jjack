@@ -104,7 +104,7 @@
     *** other environments have not been tested.
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <target name="gcc" depends="init, javah">
-    <mkdir dir="lib/i386/linux"/>
+    <mkdir dir="lib/${os.arch}/${os.name}"/>
     <exec executable="gcc" dir="src/de/gulden/framework/jjack" failonerror="yes">
       <arg value="-fPIC"/>
       <arg value="-I${JAVA_HOME}/include"/>
@@ -118,7 +118,7 @@
       <arg value="-fPIC"/>
       <arg value="-ljack"/>
       <arg value="-o"/>
-      <arg value="../../../../../lib/i386/linux/libjjack.so"/>
+      <arg value="../../../../../lib/${os.arch}/${os.name}/libjjack.so"/>
       <arg value="libjjack.o"/>
     </exec>
   </target>

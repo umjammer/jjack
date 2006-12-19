@@ -124,7 +124,7 @@ public class JJackSystem implements JJackConstants {
      * See the native implementation of <code>libjjack.so</code>
      * in file <code>libjjack.c<code>.
      */
-    private static int infPointer;
+    private static long infPointer;
 
 
     // ------------------------------------------------------------------------

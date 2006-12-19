@@ -7,7 +7,10 @@
  * Version:  0.2
  * Date:     2004-11-16
  * Author:   J. Gulden
- *
+ * Modified by: Peter J. Salomonsen
+ * 
+ * 2006-12-17 (PJS):	Changed INF pointer to long (64bit) for amd64 support
+ * 
  * Compile commands:
  * gcc -fPIC -I/usr/java/java/include -I/usr/java/java/include/linux -I/usr/include/jack -c libjjack.c
  * gcc -shared -fPIC -ljack -o libjjack.so libjjack.o
@@ -75,14 +78,6 @@ typedef struct Inf {
 /* ------------------------------------------------------------------------ */
 /* --- Private functions                                                    */
 /* ------------------------------------------------------------------------ */
-
-/*
- * Get pointer to Inf-struct from 'infPointer'-field of class JJackSystem. 
- */
-INF getInf(JNIEnv *env, jclass cls) {	
-    INF inf = (INF) getStaticIntField(env, cls, FIELD_INFPOINTER);
-    return inf;
-}
 
 /*
  * Throw a JJackException in Java with an optional second description text. 
@@ -224,6 +219,29 @@ void setStaticIntField(JNIEnv *env, jclass cls, char *name, jint val) {
 }
 
 /*
+ * Get the value of a static long-field of a class. 
+ */
+jlong getStaticLongField(JNIEnv *env, jclass cls, char *name) {
+    jfieldID fid = (*env)->GetStaticFieldID(env, cls, name, "J");
+    jlong i;
+    if (fid == 0) {
+        throwExc2(env, "cannot access int field: ", name);
+        return -1;
+    }
+    i = (*env)->GetStaticLongField(env, cls, fid);
+    return i;
+}
+
+/*
+ * Set the value of a static long-field of a class. 
+ */
+void setStaticLongField(JNIEnv *env, jclass cls, char *name, jlong val) {
+    jfieldID fid = (*env)->GetStaticFieldID(env, cls, name, "J");
+    if (fid == 0) return throwExc2(env, "cannot set long field: ", name);
+    (*env)->SetStaticLongField(env, cls, fid, val);
+}
+
+/*
  * Get the value of a static boolean-field of a class.
  */
 jint getStaticBooleanField(JNIEnv *env, jclass cls, char *name) {
@@ -265,6 +283,13 @@ void freechars(JNIEnv *env, jstring js, const char *s) {
     (*env)->ReleaseStringUTFChars(env, js, s);
 }
 
+/*
+ * Get pointer to Inf-struct from 'infPointer'-field of class JJackSystem. 
+ */
+INF getInf(JNIEnv *env, jclass cls) {	
+    INF inf = (INF) getStaticLongField(env, cls, FIELD_INFPOINTER);
+    return inf;
+}
 
 /* ------------------------------------------------------------------------- */
 /* --- Callback handlers                                                     */
@@ -353,7 +378,7 @@ JNIEXPORT void JNICALL Java_de_gulden_framework_jjack_JJackSystem_nativeInit(JNI
     inf = (INF) malloc(sizeof(struct Inf));
 	
     /* save pointer into java object */
-    setStaticIntField(env, cls, FIELD_INFPOINTER, (jint)inf);
+    setStaticLongField(env, cls, FIELD_INFPOINTER, (jlong)inf);
 	
     /* handle to JNI environment */
     inf->env = NULL;  /* initialize with NULL to mark that JACK thread needs to call AttachCurrentThread when first time inside process-callback-function */
