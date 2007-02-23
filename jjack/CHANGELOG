@@ -5,3 +5,6 @@ Version 0.2.X - Release date 2007-??-??
 - Use JAVA_HOME environment variable for ant build java dependencies. Example from shell: JAVA_HOME=/usr/lib/jvm/java-1.5.0-sun ant all
 - All files created during the make process are now in .cvsignore
 - INF pointer type is now 64-bit (long) for AMD64 support
+- fix: auto-connecting output ports now works
+- added utility clients JJackPlayer and JJackRecorder in new package de.gulden.framework.jjack.util
+- added benchmark tool in de.gulden.framework.jjack.util.benchmark

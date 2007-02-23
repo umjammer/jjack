@@ -451,8 +451,14 @@ JNIEXPORT void JNICALL Java_de_gulden_framework_jjack_JJackSystem_nativeStart(JN
             for (i=0; i < inf->portCount[mode]; i++) {
                 printf("%s %i\n", MODE_LABEL[mode], (i+1));
                 /* will fail if more ports are requested than available (as returned by jack_get_ports) */
-                if (jack_connect(inf->client, ports[i], jack_port_name(inf->port[mode][i]))) {
-                    return throwExc(env, "cannot autoconnect port");
+                if ( mode == INPUT ) {
+                    if (jack_connect(inf->client, ports[i], jack_port_name(inf->port[mode][i]))) {
+                        return throwExc(env, "cannot autoconnect input port");
+                    }
+                } else { // mode == OUTPUT
+                    if (jack_connect(inf->client, jack_port_name(inf->port[mode][i]), ports[i])) {
+                        return throwExc(env, "cannot autoconnect output port");
+                    }
                 }
             }
             free (ports);
