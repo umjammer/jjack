@@ -234,8 +234,9 @@ public class JJackMixer implements Mixer {
 	}
 
 	public javax.sound.sampled.Line.Info[] getSourceLineInfo() {
-		// TODO Auto-generated method stub
-		return null;
+		return new javax.sound.sampled.Line.Info[] {
+				new javax.sound.sampled.Line.Info(JJackLine.class)
+		};
 	}
 
 	public javax.sound.sampled.Line.Info[] getSourceLineInfo(
@@ -266,8 +267,8 @@ public class JJackMixer implements Mixer {
 	}
 
 	public boolean isLineSupported(javax.sound.sampled.Line.Info info) {
-		// TODO Auto-generated method stub
-		return false;
+		// TODO Implement proper checking
+		return true;
 	}
 
 	public boolean isSynchronizationSupported(Line[] lines, boolean maintainSync) {
