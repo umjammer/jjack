@@ -17,6 +17,7 @@ import java.io.File;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.Mixer.Info;
 
@@ -36,7 +37,8 @@ public class JJackMixerProviderTest {
 		}
 		
 		AudioInputStream stream = AudioSystem.getAudioInputStream(new File("/home/peter/mystudio/teaparty/teaparty.wav"));
-		SourceDataLine line = (SourceDataLine) AudioSystem.getMixer(jackMixerInfo).getLine(null);
+		Mixer mixer = AudioSystem.getMixer(jackMixerInfo);
+		SourceDataLine line = (SourceDataLine) AudioSystem.getMixer(jackMixerInfo).getLine(mixer.getSourceLineInfo()[0]);
 		line.open();
 		line.start();
 		
