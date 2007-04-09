@@ -96,15 +96,21 @@ public class JJackMixer implements Mixer {
 			notify();	
 		}
 		
-		public synchronized int write(byte[] b, int off, int len) {
+		private synchronized void block()
+		{
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		public int write(byte[] b, int off, int len) {
+		
 			while(bufferPosWrite+len-bufferPosRead > buffer.length)
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			
+				block();
+		
 			int localBufferPos = (int)(bufferPosWrite%buffer.length);
 			if(localBufferPos+len > buffer.length)
 			{	
