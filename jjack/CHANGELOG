@@ -11,3 +11,4 @@ Version 0.2.X - Release date 2007-??-??
 - (PJS) ability to load native library from local lib folder (failover if libjjack.so not present in system library path)
 - (PJS) Now can be launched as an Eclipse project
 - (PJS) Added JJackQuickClientLaunch which lets you select the client to launch from a dropdown
+- (PJS) New experimental JavaSound mixerprovider, for plugging javasound applications directly to jack (see com.petersalomonsen.jjack.javasound.JJackMixerProviderTest)
