@@ -50,8 +50,9 @@
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <target name="javac" depends="init">
     <mkdir dir="classes"/>
-    <javac destdir="classes" debug="on">
+    <javac target="1.5" destdir="classes" debug="on">
       <src path="src"/>
+      <include name="com/petersalomonsen/**"/>
       <include name="de/gulden/framework/jjack/**"/>
       <exclude name="de/gulden/framework/jjack/examples/**"/>
       <include name="de/gulden/application/jjack/**"/>
@@ -67,6 +68,7 @@
       <include name="de/gulden/util/swing/VUMeter.java"/>
       <include name="de/gulden/util/nio/FifoFloat.java"/>
       <include name="de/gulden/util/nio/RingFloat.java"/>
+      <include name="META-INF/services/**"/>      
     </javac>
         
     <mkdir dir="classes/de/gulden/application/jjack/res"/>
@@ -132,13 +134,15 @@
     <delete file="lib/jjack-clients.jar" failonerror="no"/>-->
     
     <jar destfile="lib/jjack.jar" compress="false">
+      <fileset dir="classes" includes="com/petersalomonsen/**/*" />
       <fileset dir="classes" includes="de/gulden/framework/jjack/*.class" excludes="de/gulden/framework/jjack/examples/**/*"/>
       <fileset dir="classes" includes="de/gulden/application/jjack/*.class"/>
       <fileset dir="classes" includes="de/gulden/application/jjack/res/*.png"/>
       <fileset dir="classes" includes="JJack.class"/>
       <fileset dir="classes" includes="JJackSystem.class"/>
       <fileset dir="classes" includes="de/gulden/util/Toolbox.class"/>
-      <manifest>
+      <fileset dir="src" includes="META-INF/services/*" />
+    	<manifest>
         <attribute name="Main-Class" value="JJack"/>
       </manifest>
     </jar>
