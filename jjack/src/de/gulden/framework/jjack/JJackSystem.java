@@ -13,6 +13,7 @@
 
 package de.gulden.framework.jjack;
 
+import java.io.File;
 import java.lang.reflect.*;
 import java.nio.*;
 import java.util.*;
@@ -132,8 +133,17 @@ public class JJackSystem implements JJackConstants {
     // ------------------------------------------------------------------------
 
     static {
-        // load native library
-        System.loadLibrary("jjack");
+    	try
+    	{
+    		// try loading native library from system lib (library path)
+    		System.loadLibrary("jjack");
+    	} catch(Throwable e)
+    	{
+    		// Else look in the local lib folder
+    		File file = new File("lib/"+System.getProperty("os.arch")+"/linux/libjjack.so");
+            String libJJackFileName = file.getAbsolutePath();
+            System.load(libJJackFileName);	
+    	}
 
         // set parameters from system properties
         clientName = System.getProperty(PROPERTY_CLIENT_NAME, DEFAULT_CLIENT_NAME);

@@ -8,3 +8,6 @@ Version 0.2.X - Release date 2007-??-??
 - fix: auto-connecting output ports now works
 - added utility clients JJackPlayer and JJackRecorder in new package de.gulden.framework.jjack.util
 - added benchmark tool in de.gulden.framework.jjack.util.benchmark
+- (PJS) ability to load native library from local lib folder (failover if libjjack.so not present in system library path)
+- (PJS) Now can be launched as an Eclipse project
+- (PJS) Added JJackQuickClientLaunch which lets you select the client to launch from a dropdown
