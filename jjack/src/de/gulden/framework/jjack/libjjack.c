@@ -10,6 +10,7 @@
  * Modified by: Peter J. Salomonsen
  * 
  * 2006-12-17 (PJS):	Changed INF pointer to long (64bit) for amd64 support
+ * 2007-04-09 (PJS):	No longer object allocation for each process call
  * 
  * Compile commands:
  * gcc -fPIC -I/usr/java/java/include -I/usr/java/java/include/linux -I/usr/include/jack -c libjjack.c
@@ -69,9 +70,11 @@ typedef struct Inf {
     int portCount[MODES];
     int portAutoconnect[MODES];     /* (boolean) */
     jack_port_t *port[MODES][MAX_PORTS];
+    jack_default_audio_sample_t *sampleBuffers[MODES][MAX_PORTS];	// Keep store of the sample buffer pointers so that we don't have to reallocate direct buffer
     jclass cls_JJackSystem;         /* handle of class JJackSystem */
     jclass cls_ByteBuffer;          /* handle of class java.nio.ByteBuffer */
     jmethodID mid_process;          /* handle of method JJackSystem.process()*/
+    jobjectArray byteBufferArray[MODES];
 } *INF;
 
 
@@ -340,16 +343,24 @@ int process(jack_nframes_t nframes, void *arg) {
     
     /* allocate DirectByteBuffer objects */
     for (mode=INPUT; mode<=OUTPUT; mode++) {
-        byteBufferArray[mode] = (*env)->NewObjectArray(env, inf->portCount[mode], inf->cls_ByteBuffer, NULL);
-        for (i=0; i < inf->portCount[mode]; i++) {
-            byteBuffer = (*env)->NewDirectByteBuffer(env, (jack_default_audio_sample_t *) jack_port_get_buffer(inf->port[mode][i], nframes), nframes*4);
-            (*env)->SetObjectArrayElement(env, byteBufferArray[mode], i, byteBuffer);
+       	for (i=0; i < inf->portCount[mode]; i++) {
+			if(inf->byteBufferArray[mode]==0)
+            	inf->byteBufferArray[mode] = (*env)->NewObjectArray(env, inf->portCount[mode], inf->cls_ByteBuffer, NULL);
+		    // Only reallocate if the buffer position changes
+			jack_default_audio_sample_t *tempSampleBuffer = (jack_default_audio_sample_t *) jack_port_get_buffer(inf->port[mode][i], nframes);
+			
+			if(tempSampleBuffer!=inf->sampleBuffers[mode][i])
+			{
+				inf->sampleBuffers[mode][i] = tempSampleBuffer;
+        		jobject byteBuffer = (*env)->NewDirectByteBuffer(env , inf->sampleBuffers[mode][i] , nframes*4);
+            	(*env)->SetObjectArrayElement(env, inf->byteBufferArray[mode], i, byteBuffer);
+			}
         }
     }
 
     /* callback to Java */
-    (*env)->CallStaticVoidMethod(env, inf->cls_JJackSystem, inf->mid_process, byteBufferArray[INPUT], byteBufferArray[OUTPUT]);
-
+    (*env)->CallStaticVoidMethod(env, inf->cls_JJackSystem, inf->mid_process, inf->byteBufferArray[INPUT], inf->byteBufferArray[OUTPUT]);
+    
     /* (no detach from JVM , thread remains attached): (*jvm)->DetachCurrentThread(jvm); */
 
     return 0;      
@@ -414,6 +425,7 @@ JNIEXPORT void JNICALL Java_de_gulden_framework_jjack_JJackSystem_nativeInit(JNI
 	
     portName = malloc(100);
     for (mode=INPUT; mode<=OUTPUT; mode++) {
+        inf->byteBufferArray[mode] = 0;
         for (i=0; i < inf->portCount[mode]; i++) {
             sprintf(portName, "%s_%i", MODE_LABEL[mode], (i+1));
             inf->port[mode][i] = jack_port_register(client, portName, JACK_DEFAULT_AUDIO_TYPE, MODE_JACK[mode], 0);
@@ -481,4 +493,15 @@ JNIEXPORT void JNICALL Java_de_gulden_framework_jjack_JJackSystem_nativeDestroy(
 JNIEXPORT jint JNICALL Java_de_gulden_framework_jjack_JJackSystem_getSampleRate(JNIEnv *env, jclass cls) {
     INF inf = getInf(env, cls);
     return jack_get_sample_rate(inf->client);
+}
+
+/*
+ * Class:     de_gulden_framework_jjack_JJackSystem
+ * Method:    getBufferSize
+ * Signature: ()V
+ */
+JNIEXPORT jint JNICALL Java_de_gulden_framework_jjack_JJackSystem_getBufferSize
+(JNIEnv *env, jclass cls) {
+    INF inf = getInf(env, cls);
+    return jack_get_buffer_size(inf->client);
 }

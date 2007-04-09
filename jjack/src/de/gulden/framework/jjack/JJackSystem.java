@@ -140,7 +140,7 @@ public class JJackSystem implements JJackConstants {
     	} catch(Throwable e)
     	{
     		// Else look in the local lib folder
-    		File file = new File("lib/"+System.getProperty("os.arch")+"/linux/libjjack.so");
+    		File file = new File("lib/"+System.getProperty("os.arch")+"/"+System.getProperty("os.name")+"/libjjack.so");
             String libJJackFileName = file.getAbsolutePath();
             System.load(libJJackFileName);	
     	}
