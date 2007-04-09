@@ -39,22 +39,25 @@ public class JJackMixer implements Mixer {
 
 	class JJackLine extends JJackClient implements SourceDataLine
 	{	
-		ByteBuffer byteBuffer = ByteBuffer.allocate(65536);
+		AudioFormat format;
+		
+		ByteBuffer byteBuffer;
 		
 		ShortBuffer shortBuffer;
 		
-		byte[] buffer = byteBuffer.array();
+		byte[] buffer;
 		
 		long bufferPosWrite = 0;
 		long bufferPosRead = 0;
+		long longFramePosition = 0;
 
+		boolean running = false;
+		boolean open = false;
+		
 		public JJackLine()
 		{
-			byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-			shortBuffer = byteBuffer.asShortBuffer();
-			
-			JJackSystem.setProcessor(this);
 		}
+
 		@Override
 		public void process(JJackAudioEvent e) {
 			for(int n=0;n<e.getOutput().capacity()*e.getOutputs().length && bufferPosRead<bufferPosWrite;n++)
@@ -63,16 +66,29 @@ public class JJackMixer implements Mixer {
 				bufferPosRead+=2;
 			}
 			releaseBlock();
+			longFramePosition = bufferPosRead;
 		}
 
 		public void open(AudioFormat format) throws LineUnavailableException {
-			// TODO Auto-generated method stub
-			
+			open(format,65536);
 		}
 
 		public void open(AudioFormat format, int bufferSize) throws LineUnavailableException {
-			// TODO Auto-generated method stub
+			this.format = format;
+			byteBuffer = ByteBuffer.allocate(bufferSize);
+			byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			shortBuffer = byteBuffer.asShortBuffer();
+			buffer = byteBuffer.array();
 			
+			try
+			{
+				JJackSystem.setProcessor(this);
+			} catch(Exception e)
+			{
+				throw new LineUnavailableException();
+			}
+			
+			open = true;
 		}
 
 		private synchronized void releaseBlock()
@@ -103,8 +119,7 @@ public class JJackMixer implements Mixer {
 		}
 
 		public int available() {
-			// TODO Auto-generated method stub
-			return 0;
+			return bufferPosWrite-bufferPosRead > buffer.length ? buffer.length : (int)(bufferPosWrite-bufferPosRead);
 		}
 
 		public void drain() {
@@ -113,23 +128,19 @@ public class JJackMixer implements Mixer {
 		}
 
 		public void flush() {
-			// TODO Auto-generated method stub
-			
+			bufferPosRead = bufferPosWrite;
 		}
 
 		public int getBufferSize() {
-			// TODO Auto-generated method stub
-			return 0;
+			return buffer.length;
 		}
 
 		public AudioFormat getFormat() {
-			// TODO Auto-generated method stub
-			return null;
+			return format;
 		}
 
 		public int getFramePosition() {
-			// TODO Auto-generated method stub
-			return 0;
+			return (int)(longFramePosition % Math.pow(2,31));
 		}
 
 		public float getLevel() {
@@ -138,8 +149,7 @@ public class JJackMixer implements Mixer {
 		}
 
 		public long getLongFramePosition() {
-			// TODO Auto-generated method stub
-			return 0;
+			return longFramePosition;
 		}
 
 		public long getMicrosecondPosition() {
@@ -153,18 +163,15 @@ public class JJackMixer implements Mixer {
 		}
 
 		public boolean isRunning() {
-			// TODO Auto-generated method stub
-			return false;
+			return running;
 		}
 
 		public void start() {
-			// TODO Auto-generated method stub
-			
+			running = true;
 		}
 
 		public void stop() {
-			// TODO Auto-generated method stub
-			
+			running = false;
 		}
 
 		public void addLineListener(LineListener listener) {
@@ -173,8 +180,7 @@ public class JJackMixer implements Mixer {
 		}
 
 		public void close() {
-			// TODO Auto-generated method stub
-			
+			open = false;
 		}
 
 		public Control getControl(Type control) {
@@ -198,13 +204,11 @@ public class JJackMixer implements Mixer {
 		}
 
 		public boolean isOpen() {
-			// TODO Auto-generated method stub
-			return false;
+			return open;
 		}
 
 		public void open() throws LineUnavailableException {
-			// TODO Auto-generated method stub
-			
+			open(null);
 		}
 
 		public void removeLineListener(LineListener listener) {

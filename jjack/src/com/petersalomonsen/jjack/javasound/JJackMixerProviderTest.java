@@ -37,6 +37,8 @@ public class JJackMixerProviderTest {
 		
 		AudioInputStream stream = AudioSystem.getAudioInputStream(new File("/home/peter/mystudio/teaparty/teaparty.wav"));
 		SourceDataLine line = (SourceDataLine) AudioSystem.getMixer(jackMixerInfo).getLine(null);
+		line.open();
+		line.start();
 		
 		byte[] buf = new byte[128];
 		while(stream.available()>0)
