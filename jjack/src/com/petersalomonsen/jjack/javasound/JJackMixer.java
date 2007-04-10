@@ -60,13 +60,16 @@ public class JJackMixer implements Mixer {
 
 		@Override
 		public void process(JJackAudioEvent e) {
-			for(int n=0;n<e.getOutput().capacity()*e.getOutputs().length && bufferPosRead<bufferPosWrite;n++)
+			if(bufferPosWrite-bufferPosRead >= e.getOutput().capacity() * e.getOutputs().length * 2)
 			{
-				e.getOutputs()[n%e.getOutputs().length].put(n/e.getOutputs().length, shortBuffer.get( (int)(bufferPosRead%buffer.length)/2  ) / 32768f);				
-				bufferPosRead+=2;
-			}
-			releaseBlock();
-			longFramePosition = bufferPosRead;
+				for(int n=0;n<e.getOutput().capacity()*e.getOutputs().length;n++)
+				{
+					e.getOutputs()[n%e.getOutputs().length].put(n/e.getOutputs().length, shortBuffer.get( (int)(bufferPosRead%buffer.length)/2  ) / 32768f);				
+					bufferPosRead+=2;
+				}
+				releaseBlock();
+				longFramePosition = bufferPosRead;
+			}	
 		}
 
 		public void open(AudioFormat format) throws LineUnavailableException {
