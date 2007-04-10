@@ -68,7 +68,7 @@ public class JJackMixer implements Mixer {
 					bufferPosRead+=2;
 				}
 				releaseBlock();
-				longFramePosition = bufferPosRead;
+				longFramePosition = bufferPosRead / (e.getOutputs().length * 2);
 			}	
 		}
 
@@ -101,12 +101,14 @@ public class JJackMixer implements Mixer {
 		
 		private synchronized void block()
 		{
+//			long blockStart = System.currentTimeMillis();
 			try {
 				wait();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+//			System.out.println(System.currentTimeMillis()-blockStart);
 		}
 		
 		public int write(byte[] b, int off, int len) {
