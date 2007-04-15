@@ -1,7 +1,7 @@
 package com.petersalomonsen.jjack.javasound;
 
 /**
- * A generic FIFO buffer that blocks on read or write if trying to read or write
+ * A FIFO byte buffer that blocks on read or write if trying to read or write
  * more than is available for reading/writing.
  * 
  * @author Peter Johan Salomonse
