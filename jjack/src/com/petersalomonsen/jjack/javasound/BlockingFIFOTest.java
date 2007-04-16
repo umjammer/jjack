@@ -7,9 +7,9 @@ public class BlockingFIFOTest {
 	 */
 	public static void main(String[] args) {
 		final byte[] write = new byte[] {0,1,2,3,4,5,6,7,8,9};
-		final byte[] read = new byte[15];
+		final byte[] read = new byte[2];
 		
-		final BlockingByteFIFO bfifo = new BlockingByteFIFO(35);
+		final BlockingByteFIFO bfifo = new BlockingByteFIFO(100);
 		
 		new Thread() {
 			public void run()
@@ -38,7 +38,7 @@ public class BlockingFIFOTest {
 					
 					try
 					{
-						Thread.sleep(1000);
+						Thread.sleep(1);
 					} catch(Exception e) {}
 				}
 			}
