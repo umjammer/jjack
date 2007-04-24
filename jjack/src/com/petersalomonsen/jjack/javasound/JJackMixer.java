@@ -14,8 +14,8 @@ package com.petersalomonsen.jjack.javasound;
  */
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
+import java.util.Vector;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.Control;
@@ -23,7 +23,6 @@ import javax.sound.sampled.Line;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
-import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.Control.Type;
 
 import de.gulden.framework.jjack.JJackAudioEvent;
@@ -35,203 +34,93 @@ import de.gulden.framework.jjack.JJackSystem;
  * 
  * @author Peter Johan Salomonsen
  */
-public class JJackMixer implements Mixer {
+public class JJackMixer extends JJackClient implements Mixer {
 
-	class JJackLine extends JJackClient implements SourceDataLine
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Currently opened target/source lines
+	 */
+	Vector<TargetJJackLine> targetLines = new Vector<TargetJJackLine>();
+	Vector<SourceJJackLine> sourceLines = new Vector<SourceJJackLine>();
+	
+	/**
+	 * Supported audio formats
+	 */
+	AudioFormat[] audioFormatsOut;
+	AudioFormat[] audioFormatsIn;
+	
+	public JJackMixer()
 	{	
-		AudioFormat format;
+		/**
+		 * Determine number of available out channels
+		 */
+		int outputs = JJackSystem.countPorts(JJackSystem.OUTPUT);		
+		audioFormatsOut = new AudioFormat[8*(outputs)];
+		fillAudioFormats(audioFormatsOut);
 		
-		ByteBuffer byteBuffer;
+		/**
+		 * Determine number of available in channels
+		 */
+		int inputs = JJackSystem.countPorts(JJackSystem.OUTPUT);		
+		audioFormatsIn = new AudioFormat[8*(inputs)];
+		fillAudioFormats(audioFormatsIn);
 		
-		ShortBuffer shortBuffer;
-		
-		byte[] buffer;
-		
-		long bufferPosWrite = 0;
-		long bufferPosRead = 0;
-		long longFramePosition = 0;
-
-		boolean running = false;
-		boolean open = false;
-		
-		public JJackLine()
+		try
+		{
+			JJackSystem.setProcessor(this);
+		} catch(Exception e)
 		{
 		}
 
-		@Override
-		public void process(JJackAudioEvent e) {
-			if(bufferPosWrite-bufferPosRead >= e.getOutput().capacity() * e.getOutputs().length * 2)
-			{
-				for(int n=0;n<e.getOutput().capacity()*e.getOutputs().length;n++)
-				{
-					e.getOutputs()[n%e.getOutputs().length].put(n/e.getOutputs().length, shortBuffer.get( (int)(bufferPosRead%buffer.length)/2  ) / 32768f);				
-					bufferPosRead+=2;
-				}
-				releaseBlock();
-				longFramePosition = bufferPosRead / (e.getOutputs().length * 2);
-			}	
-		}
+	}
+	
+	/**
+	 * Fill audioFormats array with available audio formats. We'll support 8,16,24 and 32 bit, big and little endian and lines up to "inputs/outputs"
+	 * number of channels
+	 * @param audioFormats
+	 */
+	private void fillAudioFormats(AudioFormat[] audioFormats)
+	{
+		for(int n=0;n<audioFormats.length;n++)
+			audioFormats[n] = new AudioFormat(JJackSystem.getSampleRate(),8+(8*(n%4)),((n/8)+1),true,((n%8)/4) == 0 ? false : true);
+	}
+	
+	@Override
+	public void process(JJackAudioEvent e) {
+		
+		int length = e.getOutput().capacity()*e.getOutputs().length;
 
-		public void open(AudioFormat format) throws LineUnavailableException {
-			open(format,65536);
-		}
-
-		public void open(AudioFormat format, int bufferSize) throws LineUnavailableException {
-			this.format = format;
-			byteBuffer = ByteBuffer.allocate(bufferSize);
-			byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-			shortBuffer = byteBuffer.asShortBuffer();
-			buffer = byteBuffer.array();
-			
-			try
-			{
-				JJackSystem.setProcessor(this);
-			} catch(Exception e)
-			{
-				throw new LineUnavailableException();
-			}
-			
-			open = true;
-		}
-
-		private synchronized void releaseBlock()
+		for(SourceJJackLine line : sourceLines)
 		{
-			notify();	
-		}
-		
-		private synchronized void block()
-		{
-//			long blockStart = System.currentTimeMillis();
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-//			System.out.println(System.currentTimeMillis()-blockStart);
-		}
-		
-		public int write(byte[] b, int off, int len) {
-		
-			while(bufferPosWrite+len-bufferPosRead > buffer.length)
-				block();
-		
-			int localBufferPos = (int)(bufferPosWrite%buffer.length);
-			if(localBufferPos+len > buffer.length)
-			{	
-				System.arraycopy(b, off, buffer, localBufferPos, buffer.length-localBufferPos);	
-				System.arraycopy(b, off, buffer, 0, len - (buffer.length-localBufferPos));
-			}
-			else
-				System.arraycopy(b, off, buffer, localBufferPos,len);
-			
-			bufferPosWrite+=len;	
-			return len;
-		}
+			float[] lineBuffer = line.readFloat(length);
 
-		public int available() {
-			return bufferPosWrite-bufferPosRead > buffer.length ? buffer.length : (int)(bufferPosWrite-bufferPosRead);
-		}
-
-		public void drain() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		public void flush() {
-			bufferPosRead = bufferPosWrite;
-		}
-
-		public int getBufferSize() {
-			return buffer.length;
-		}
-
-		public AudioFormat getFormat() {
-			return format;
-		}
-
-		public int getFramePosition() {
-			return (int)(longFramePosition % Math.pow(2,31));
-		}
-
-		public float getLevel() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		public long getLongFramePosition() {
-			return longFramePosition;
-		}
-
-		public long getMicrosecondPosition() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		public boolean isActive() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		public boolean isRunning() {
-			return running;
-		}
-
-		public void start() {
-			running = true;
-		}
-
-		public void stop() {
-			running = false;
-		}
-
-		public void addLineListener(LineListener listener) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		public void close() {
-			open = false;
-		}
-
-		public Control getControl(Type control) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		public Control[] getControls() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		public javax.sound.sampled.Line.Info getLineInfo() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		public boolean isControlSupported(Type control) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		public boolean isOpen() {
-			return open;
-		}
-
-		public void open() throws LineUnavailableException {
-			open(null);
-		}
-
-		public void removeLineListener(LineListener listener) {
-			// TODO Auto-generated method stub
-			
+			for(int n=0;n<length;n++)
+			{
+				e.getOutputs()[n%e.getOutputs().length].put(n/e.getOutputs().length, lineBuffer[n]);				
+			}			
 		}
 		
 	}
-	
+
 	public Line getLine(javax.sound.sampled.Line.Info info)
 			throws LineUnavailableException {
-		return new JJackLine();
+		
+		assert(info.getLineClass() == SourceJJackLine.class || info.getLineClass() == TargetJJackLine.class);
+		
+		try {
+			Line line = (Line)info.getLineClass().newInstance();
+			if(line.getClass()==SourceJJackLine.class)
+				sourceLines.add((SourceJJackLine)line);
+			return line; 
+		} catch (InstantiationException e) {
+			throw new LineUnavailableException();
+		} catch (IllegalAccessException e) {
+			throw new LineUnavailableException();
+		}
 	}
 
 	public int getMaxLines(javax.sound.sampled.Line.Info info) {
@@ -245,15 +134,18 @@ public class JJackMixer implements Mixer {
 	}
 
 	public javax.sound.sampled.Line.Info[] getSourceLineInfo() {
-		return new javax.sound.sampled.Line.Info[] {
-				new javax.sound.sampled.Line.Info(JJackLine.class)
+		
+		return new Line.Info[] {
+				new Line.Info(SourceJJackLine.class)
 		};
 	}
 
 	public javax.sound.sampled.Line.Info[] getSourceLineInfo(
 			javax.sound.sampled.Line.Info info) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return new Line.Info[] {
+				new Line.Info(SourceJJackLine.class)
+		};
 	}
 
 	public Line[] getSourceLines() {
