@@ -92,16 +92,20 @@ public class JJackMixer extends JJackClient implements Mixer {
 	@Override
 	public void process(JJackAudioEvent e) {
 		
-		int length = e.getOutput().capacity()*e.getOutputs().length;
-
+		int channelIndex = 0;
+		
 		for(SourceJJackLine line : sourceLines)
 		{
+			int channels = line.getFormat().getChannels();
+			int length = e.getOutput().capacity()*channels;
+			
 			float[] lineBuffer = line.readFloat(length);
 
 			for(int n=0;n<length;n++)
 			{
-				e.getOutputs()[n%e.getOutputs().length].put(n/e.getOutputs().length, lineBuffer[n]);				
-			}			
+				e.getOutputs()[(n%channels)+channelIndex].put((n/channels)+channelIndex, lineBuffer[n]);				
+			}
+			channelIndex += channels;
 		}
 		
 	}

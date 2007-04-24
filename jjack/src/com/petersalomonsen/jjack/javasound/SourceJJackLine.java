@@ -8,8 +8,12 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-public class SourceJJackLine extends JJackLine implements SourceDataLine {
+import de.gulden.framework.jjack.JJackSystem;
 
+public class SourceJJackLine extends JJackLine implements SourceDataLine {
+	
+	AudioFormat audioFormat = new AudioFormat(JJackSystem.getSampleRate(),16,2,true,false);
+	
 	public void open() throws LineUnavailableException
 	{
 		open(null);
@@ -49,8 +53,7 @@ public class SourceJJackLine extends JJackLine implements SourceDataLine {
 	}
 
 	public AudioFormat getFormat() {
-		// TODO Auto-generated method stub
-		return null;
+		return audioFormat;
 	}
 
 	public int getFramePosition() {
