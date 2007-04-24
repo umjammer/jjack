@@ -100,7 +100,12 @@ public class SourceJJackLine extends JJackLine implements SourceDataLine {
 	ByteBuffer byteBuffer = null;
 	ShortBuffer shortBuffer;
 	
-	public float[] readFloat(int length) {
+	/**
+	 * Used by JJackMixer to read float values
+	 * @param length
+	 * @return
+	 */
+	float[] readFloat(int length) {
 		if(floatBuffer == null || floatBuffer.length!=length)
 		{
 			floatBuffer = new float[length];

@@ -108,6 +108,21 @@ public class JJackMixer extends JJackClient implements Mixer {
 			channelIndex += channels;
 		}
 		
+		channelIndex = 0;
+		
+		for(TargetJJackLine line : targetLines)
+		{
+			int channels = line.getFormat().getChannels();
+			int length = e.getOutput().capacity()*channels;
+			
+			float[] lineBuffer = line.getFloatBuffer(length);
+
+			for(int n=0;n<length;n++)
+			{
+				lineBuffer[n] =  e.getOutputs()[(n%channels)+channelIndex].get((n/channels)+channelIndex);				
+			}
+			channelIndex += channels;
+		}
 	}
 
 	public Line getLine(javax.sound.sampled.Line.Info info)

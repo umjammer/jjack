@@ -1,18 +1,31 @@
 package com.petersalomonsen.jjack.javasound;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
+
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
+import de.gulden.framework.jjack.JJackSystem;
+
 public class TargetJJackLine extends JJackLine implements TargetDataLine {
 
+	AudioFormat audioFormat = new AudioFormat(JJackSystem.getSampleRate(),16,2,true,false);
+	
+	public void open() throws LineUnavailableException
+	{
+		open(null);
+	}
+	
 	public void open(AudioFormat format) throws LineUnavailableException {
-		// TODO Auto-generated method stub
+		open(format,65536);
 		
 	}
 
 	public void open(AudioFormat format, int bufferSize) throws LineUnavailableException {
-		// TODO Auto-generated method stub
+		fifo = new BlockingByteFIFO(bufferSize);
 		
 	}
 
@@ -40,8 +53,7 @@ public class TargetJJackLine extends JJackLine implements TargetDataLine {
 	}
 
 	public AudioFormat getFormat() {
-		// TODO Auto-generated method stub
-		return null;
+		return audioFormat;
 	}
 
 	public int getFramePosition() {
@@ -84,4 +96,35 @@ public class TargetJJackLine extends JJackLine implements TargetDataLine {
 		
 	}
 
+	float[] floatBuffer = null;
+	ByteBuffer byteBuffer = null;
+	ShortBuffer shortBuffer;
+	
+	/**
+	 * Used by JJackMixer to get a buffer to write float values
+	 * @param length
+	 * @return
+	 */
+	float[] getFloatBuffer(int length) {
+		if(floatBuffer == null || floatBuffer.length!=length)
+		{
+			floatBuffer = new float[length];
+			byteBuffer = ByteBuffer.allocate(length*2);
+			byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			shortBuffer = byteBuffer.asShortBuffer();
+		}	
+		return floatBuffer;
+	}
+
+	/**
+	 * Used by JJackMixer to write the float buffer retrieved using getFloatBuffer()
+	 *
+	 */
+	void writeFloatBuffer()
+	{
+		for(int n=0;n<floatBuffer.length;n++)
+			shortBuffer.put(n,(short)(floatBuffer[n]*32768));
+		
+		fifo.write(byteBuffer.array(), 0, byteBuffer.capacity());
+	}
 }
