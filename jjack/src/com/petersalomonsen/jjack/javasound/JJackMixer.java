@@ -13,8 +13,6 @@ package com.petersalomonsen.jjack.javasound;
  * Author:  Peter Johan Salomonsen
  */
 
-import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
 import java.util.Vector;
 
 import javax.sound.sampled.AudioFormat;
@@ -93,17 +91,19 @@ public class JJackMixer extends JJackClient implements Mixer {
 	public void process(JJackAudioEvent e) {
 		
 		int channelIndex = 0;
-		
 		for(SourceJJackLine line : sourceLines)
 		{
 			int channels = line.getFormat().getChannels();
 			int length = e.getOutput().capacity()*channels;
-			
-			float[] lineBuffer = line.readFloat(length);
-
-			for(int n=0;n<length;n++)
+		
+			if(line.canReadFloat(length))
 			{
-				e.getOutputs()[(n%channels)+channelIndex].put((n/channels)+channelIndex, lineBuffer[n]);				
+				float[] lineBuffer = line.readFloat(length);
+				
+				for(int n=0;n<length;n++)
+				{
+					e.getOutputs()[(n%channels)+channelIndex].put((n/channels), lineBuffer[n]);				
+				}
 			}
 			channelIndex += channels;
 		}
@@ -113,13 +113,18 @@ public class JJackMixer extends JJackClient implements Mixer {
 		for(TargetJJackLine line : targetLines)
 		{
 			int channels = line.getFormat().getChannels();
-			int length = e.getOutput().capacity()*channels;
+			int length = e.getInput().capacity()*channels;
 			
-			float[] lineBuffer = line.getFloatBuffer(length);
-
-			for(int n=0;n<length;n++)
+			if(line.canWriteFloat(length))
 			{
-				lineBuffer[n] =  e.getOutputs()[(n%channels)+channelIndex].get((n/channels)+channelIndex);				
+				float[] lineBuffer = line.getFloatBuffer(length);
+				
+				for(int n=0;n<length;n++)
+				{
+					lineBuffer[n] =  e.getInputs()[(n%channels)+channelIndex].get((n/channels));				
+				}
+				
+				line.writeFloatBuffer();
 			}
 			channelIndex += channels;
 		}
@@ -134,6 +139,9 @@ public class JJackMixer extends JJackClient implements Mixer {
 			Line line = (Line)info.getLineClass().newInstance();
 			if(line.getClass()==SourceJJackLine.class)
 				sourceLines.add((SourceJJackLine)line);
+			else if(line.getClass()==TargetJJackLine.class)
+				targetLines.add((TargetJJackLine)line);
+			
 			return line; 
 		} catch (InstantiationException e) {
 			throw new LineUnavailableException();
@@ -173,8 +181,9 @@ public class JJackMixer extends JJackClient implements Mixer {
 	}
 
 	public javax.sound.sampled.Line.Info[] getTargetLineInfo() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Line.Info[] {
+				new Line.Info(TargetJJackLine.class)
+		};
 	}
 
 	public javax.sound.sampled.Line.Info[] getTargetLineInfo(

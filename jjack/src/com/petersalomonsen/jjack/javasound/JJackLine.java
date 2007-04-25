@@ -1,10 +1,29 @@
 package com.petersalomonsen.jjack.javasound;
+
+/*
+ * Project: JJack - Java bridge API for the JACK Audio Connection Kit
+ * Class:   JJackLine
+ * Version: 0.3
+ *
+ * Date:    2007-04-09
+ *
+ * Licensed under the GNU Lesser General Public License (LGPL).
+ * This comes with NO WARRANTY. See file license.txt for details.
+ *
+ * Author:  Peter Johan Salomonsen
+ */
+
 import javax.sound.sampled.Control;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Control.Type;
 
+/**
+ * Base class for JJack Lines
+ * @author Peter Johan Salomonsen
+ *
+ */
 public class JJackLine implements Line {
 
 	BlockingByteFIFO fifo;

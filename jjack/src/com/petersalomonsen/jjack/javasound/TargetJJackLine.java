@@ -1,4 +1,16 @@
 package com.petersalomonsen.jjack.javasound;
+/*
+ * Project: JJack - Java bridge API for the JACK Audio Connection Kit
+ * Class:   TargetJJackLine
+ * Version: 0.3
+ *
+ * Date:    2007-04-09
+ *
+ * Licensed under the GNU Lesser General Public License (LGPL).
+ * This comes with NO WARRANTY. See file license.txt for details.
+ *
+ * Author:  Peter Johan Salomonsen
+ */
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -10,6 +22,11 @@ import javax.sound.sampled.TargetDataLine;
 
 import de.gulden.framework.jjack.JJackSystem;
 
+/**
+ * JJack TargetDataLine implementation
+ * @author Peter Johan Salomonsen
+ *
+ */
 public class TargetJJackLine extends JJackLine implements TargetDataLine {
 
 	AudioFormat audioFormat = new AudioFormat(JJackSystem.getSampleRate(),16,2,true,false);
@@ -127,4 +144,10 @@ public class TargetJJackLine extends JJackLine implements TargetDataLine {
 		
 		fifo.write(byteBuffer.array(), 0, byteBuffer.capacity());
 	}
+	
+	boolean canWriteFloat(int length)
+	{
+		return fifo.availableWrite() >= length*2;
+	}
+
 }

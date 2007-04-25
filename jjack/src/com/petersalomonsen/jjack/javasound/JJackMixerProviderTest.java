@@ -13,14 +13,18 @@ package com.petersalomonsen.jjack.javasound;
  * Author:  Peter Johan Salomonsen
  */
 
-import java.io.File;
-
-import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.Mixer.Info;
 
+/**
+ * Simple test that reads the input and writes to the output - the default buffer size of 64KB will create a delay effect
+ * 
+ * @author Peter Johan Salomonsen
+ *
+ */
 public class JJackMixerProviderTest {
 
 	/**
@@ -36,17 +40,19 @@ public class JJackMixerProviderTest {
 				jackMixerInfo = info;
 		}
 		
-		AudioInputStream stream = AudioSystem.getAudioInputStream(new File("/home/peter/mystudio/teaparty/teaparty.wav"));
 		Mixer mixer = AudioSystem.getMixer(jackMixerInfo);
-		SourceDataLine line = (SourceDataLine) AudioSystem.getMixer(jackMixerInfo).getLine(mixer.getSourceLineInfo()[0]);
-		line.open();
-		line.start();
+		SourceDataLine lineOut = (SourceDataLine) mixer.getLine(mixer.getSourceLineInfo()[0]);
+		lineOut.open();
+		lineOut.start();
+		TargetDataLine lineIn = (TargetDataLine) mixer.getLine(mixer.getTargetLineInfo()[0]);
+		lineIn.open();
+		lineIn.start();
 		
 		byte[] buf = new byte[128];
-		while(stream.available()>0)
+		while(true)
 		{
-			stream.read(buf,0,buf.length);
-			line.write(buf,0,buf.length);
+			lineIn.read(buf,0,buf.length);
+			lineOut.write(buf,0,buf.length);
 		}
 			
 	}

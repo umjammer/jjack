@@ -1,5 +1,22 @@
 package com.petersalomonsen.jjack.javasound;
 
+/*
+ * Project: JJack - Java bridge API for the JACK Audio Connection Kit
+ * Class:   BlockingFIFOTest
+ * Version: 0.3
+ *
+ * Date:    2007-04-09
+ *
+ * Licensed under the GNU Lesser General Public License (LGPL).
+ * This comes with NO WARRANTY. See file license.txt for details.
+ *
+ * Author:  Peter Johan Salomonsen
+ */
+
+/**
+ * Simple test of the FIFO buffer - verifying that the data that goes in first comes out first
+ * @author Peter Johan Salomonsen
+ */
 public class BlockingFIFOTest {
 
 	/**
