@@ -39,13 +39,18 @@ public class JJackMixerProvider extends MixerProvider {
 		mixer = new JJackMixer();
 	}
 	
-	@Override
+	/**
+	 * @Override
+	 */
 	public Mixer getMixer(Info info) {
-		assert(info instanceof JJackMixerInfo);
+		//assert(info instanceof JJackMixerInfo);
+		if (! (info instanceof JJackMixerInfo) ) throw new InternalError("assertion failed");
 		return mixer;
 	}
 
-	@Override
+	/**
+	 * @Override
+	 */
 	public Info[] getMixerInfo() {
 		return infos;
 	}

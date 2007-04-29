@@ -37,8 +37,11 @@ public class JJackMixerProviderTest {
 		// Scan mixers
 		Info jackMixerInfo = null;
 		
-		for(Info info : AudioSystem.getMixerInfo())
+		//for(Info info : AudioSystem.getMixerInfo())
+		Info[] infos = AudioSystem.getMixerInfo();
+		for (int i = 0; i < infos.length; i++)
 		{
+			Info info = infos[i];
 			if(info.getName().equals("JJack"))
 				jackMixerInfo = info;
 		}

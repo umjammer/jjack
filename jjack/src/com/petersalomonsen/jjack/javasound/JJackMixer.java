@@ -13,6 +13,7 @@ package com.petersalomonsen.jjack.javasound;
  * Author:  Peter Johan Salomonsen
  */
 
+import java.util.Enumeration;
 import java.util.Vector;
 
 import javax.sound.sampled.AudioFormat;
@@ -42,8 +43,10 @@ public class JJackMixer extends JJackClient implements Mixer {
 	/**
 	 * Currently opened target/source lines
 	 */
-	Vector<TargetJJackLine> targetLines = new Vector<TargetJJackLine>();
-	Vector<SourceJJackLine> sourceLines = new Vector<SourceJJackLine>();
+	//Vector<TargetJJackLine> targetLines = new Vector<TargetJJackLine>();
+	//Vector<SourceJJackLine> sourceLines = new Vector<SourceJJackLine>();
+	Vector targetLines = new Vector();
+	Vector sourceLines = new Vector();
 	
 	/**
 	 * Supported audio formats
@@ -87,12 +90,16 @@ public class JJackMixer extends JJackClient implements Mixer {
 			audioFormats[n] = new AudioFormat(JJackSystem.getSampleRate(),8+(8*(n%4)),((n/8)+1),true,((n%8)/4) == 0 ? false : true);
 	}
 	
-	@Override
+	/**
+	 * @Override
+	 */
 	public void process(JJackAudioEvent e) {
 		
 		int channelIndex = 0;
-		for(SourceJJackLine line : sourceLines)
+		//for(SourceJJackLine line : sourceLines)
+		for (Enumeration en = sourceLines.elements(); en.hasMoreElements(); )
 		{
+			SourceJJackLine line = (SourceJJackLine)en.nextElement();
 			int channels = line.getFormat().getChannels();
 			int length = e.getOutput().capacity()*channels;
 		
@@ -110,8 +117,10 @@ public class JJackMixer extends JJackClient implements Mixer {
 		
 		channelIndex = 0;
 		
-		for(TargetJJackLine line : targetLines)
+		//for(TargetJJackLine line : targetLines)
+		for (Enumeration en = targetLines.elements(); en.hasMoreElements(); )
 		{
+			TargetJJackLine line = (TargetJJackLine)en.nextElement();
 			int channels = line.getFormat().getChannels();
 			int length = e.getInput().capacity()*channels;
 			
@@ -133,7 +142,8 @@ public class JJackMixer extends JJackClient implements Mixer {
 	public Line getLine(javax.sound.sampled.Line.Info info)
 			throws LineUnavailableException {
 		
-		assert(info.getLineClass() == SourceJJackLine.class || info.getLineClass() == TargetJJackLine.class);
+		//assert(info.getLineClass() == SourceJJackLine.class || info.getLineClass() == TargetJJackLine.class);
+		if (! (info.getLineClass() == SourceJJackLine.class || info.getLineClass() == TargetJJackLine.class) ) throw new InternalError("assertion failed");
 		
 		try {
 			Line line = (Line)info.getLineClass().newInstance();

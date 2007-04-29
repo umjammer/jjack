@@ -45,8 +45,10 @@ public class BlockingFIFOTest {
 				{
 					bfifo.read(read, 0, read.length);
 					
-					for(byte b : read)
+					//for(byte b : read)
+					for (int i = 0; i < read.length; i++)
 					{
+						byte b = read[i];
 						System.out.println(b+" "+(n%10));
 						if(n%10!=b)
 							System.out.println("ERROR");

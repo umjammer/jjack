@@ -53,10 +53,14 @@ public class JJackQuickClientLaunch {
 		
 		File dir = new File(ClassLoader.getSystemResource(basePath).getPath());
 				
-		List<Class> clients = new ArrayList<Class>();
+		//List<Class> clients = new ArrayList<Class>();
+		List clients = new ArrayList();
 		
-		for(File file : dir.listFiles())
+		//for(File file : dir.listFiles())
+		File[] files =  dir.listFiles();
+		for (int i = 0; i < files.length; i++)
 		{
+			File file = files[i];
 			if(!file.isDirectory())
 			{
 				String relativePath = file.getPath();
