@@ -13,11 +13,14 @@ package com.petersalomonsen.jjack.javasound;
  * Author:  Peter Johan Salomonsen
  */
 
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.Mixer.Info;
+
+import de.gulden.framework.jjack.JJackSystem;
 
 /**
  * Simple test that reads the input and writes to the output - the default buffer size of 64KB will create a delay effect
@@ -39,13 +42,14 @@ public class JJackMixerProviderTest {
 			if(info.getName().equals("JJack"))
 				jackMixerInfo = info;
 		}
+		AudioFormat format = new AudioFormat(JJackSystem.getSampleRate(),16,2,true,false);
 		
 		Mixer mixer = AudioSystem.getMixer(jackMixerInfo);
 		SourceDataLine lineOut = (SourceDataLine) mixer.getLine(mixer.getSourceLineInfo()[0]);
-		lineOut.open();
+		lineOut.open(format,512);
 		lineOut.start();
 		TargetDataLine lineIn = (TargetDataLine) mixer.getLine(mixer.getTargetLineInfo()[0]);
-		lineIn.open();
+		lineIn.open(format,512);
 		lineIn.start();
 		
 		byte[] buf = new byte[128];

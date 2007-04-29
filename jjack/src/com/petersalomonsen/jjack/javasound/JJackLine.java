@@ -13,11 +13,14 @@ package com.petersalomonsen.jjack.javasound;
  * Author:  Peter Johan Salomonsen
  */
 
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.Control;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Control.Type;
+
+import de.gulden.framework.jjack.JJackSystem;
 
 /**
  * Base class for JJack Lines
@@ -27,7 +30,8 @@ import javax.sound.sampled.Control.Type;
 public class JJackLine implements Line {
 
 	BlockingByteFIFO fifo;
-	
+	AudioFormat format = new AudioFormat(JJackSystem.getSampleRate(),16,2,true,false);
+
 	public void addLineListener(LineListener listener) {
 		// TODO Auto-generated method stub
 		

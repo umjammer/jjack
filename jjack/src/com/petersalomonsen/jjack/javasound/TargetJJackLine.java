@@ -28,12 +28,10 @@ import de.gulden.framework.jjack.JJackSystem;
  *
  */
 public class TargetJJackLine extends JJackLine implements TargetDataLine {
-
-	AudioFormat audioFormat = new AudioFormat(JJackSystem.getSampleRate(),16,2,true,false);
 	
 	public void open() throws LineUnavailableException
 	{
-		open(null);
+		open(format);
 	}
 	
 	public void open(AudioFormat format) throws LineUnavailableException {
@@ -42,6 +40,7 @@ public class TargetJJackLine extends JJackLine implements TargetDataLine {
 	}
 
 	public void open(AudioFormat format, int bufferSize) throws LineUnavailableException {
+		this.format = format;
 		fifo = new BlockingByteFIFO(bufferSize);
 		
 	}
@@ -70,7 +69,7 @@ public class TargetJJackLine extends JJackLine implements TargetDataLine {
 	}
 
 	public AudioFormat getFormat() {
-		return audioFormat;
+		return format;
 	}
 
 	public int getFramePosition() {

@@ -27,9 +27,7 @@ import de.gulden.framework.jjack.JJackSystem;
  *
  */
 public class SourceJJackLine extends JJackLine implements SourceDataLine {
-	
-	AudioFormat audioFormat = new AudioFormat(JJackSystem.getSampleRate(),16,2,true,false);
-	
+		
 	public void open() throws LineUnavailableException
 	{
 		open(null);
@@ -69,7 +67,7 @@ public class SourceJJackLine extends JJackLine implements SourceDataLine {
 	}
 
 	public AudioFormat getFormat() {
-		return audioFormat;
+		return format;
 	}
 
 	public int getFramePosition() {
