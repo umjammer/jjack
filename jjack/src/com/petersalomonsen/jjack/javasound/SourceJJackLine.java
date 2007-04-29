@@ -109,10 +109,6 @@ public class SourceJJackLine extends JJackLine implements SourceDataLine {
 		// TODO Auto-generated method stub
 		
 	}
-
-	float[] floatBuffer = null;
-	ByteBuffer byteBuffer = null;
-	ShortBuffer shortBuffer;
 	
 	/**
 	 * Used by JJackMixer to read float values
@@ -120,13 +116,7 @@ public class SourceJJackLine extends JJackLine implements SourceDataLine {
 	 * @return
 	 */
 	float[] readFloat(int length) {
-		if(floatBuffer == null || floatBuffer.length!=length)
-		{
-			floatBuffer = new float[length];
-			byteBuffer = ByteBuffer.allocate(length*2);
-			byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-			shortBuffer = byteBuffer.asShortBuffer();
-		}
+		checkAndAllocateBuffers(length);
 		
 		fifo.read(byteBuffer.array(), 0, byteBuffer.capacity());
 		

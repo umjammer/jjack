@@ -112,23 +112,13 @@ public class TargetJJackLine extends JJackLine implements TargetDataLine {
 		
 	}
 
-	float[] floatBuffer = null;
-	ByteBuffer byteBuffer = null;
-	ShortBuffer shortBuffer;
-	
 	/**
 	 * Used by JJackMixer to get a buffer to write float values
 	 * @param length
 	 * @return
 	 */
 	float[] getFloatBuffer(int length) {
-		if(floatBuffer == null || floatBuffer.length!=length)
-		{
-			floatBuffer = new float[length];
-			byteBuffer = ByteBuffer.allocate(length*2);
-			byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-			shortBuffer = byteBuffer.asShortBuffer();
-		}	
+		checkAndAllocateBuffers(length);
 		return floatBuffer;
 	}
 

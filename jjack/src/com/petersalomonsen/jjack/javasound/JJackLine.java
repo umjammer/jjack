@@ -13,6 +13,10 @@ package com.petersalomonsen.jjack.javasound;
  * Author:  Peter Johan Salomonsen
  */
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
+
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.Control;
 import javax.sound.sampled.Line;
@@ -31,6 +35,21 @@ public class JJackLine implements Line {
 
 	BlockingByteFIFO fifo;
 	AudioFormat format = new AudioFormat(JJackSystem.getSampleRate(),16,2,true,false);
+
+	float[] floatBuffer = null;
+	ByteBuffer byteBuffer = null;
+	ShortBuffer shortBuffer;
+	
+	protected final void checkAndAllocateBuffers(int length)
+	{
+		if(floatBuffer == null || floatBuffer.length!=length)
+		{
+			floatBuffer = new float[length];
+			byteBuffer = ByteBuffer.allocate(length*2);
+			byteBuffer.order(format.isBigEndian() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
+			shortBuffer = byteBuffer.asShortBuffer();
+		}
+	}
 
 	public void addLineListener(LineListener listener) {
 		// TODO Auto-generated method stub
