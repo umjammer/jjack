@@ -14,3 +14,4 @@ Version 0.2.X - Release date 2007-??-??
 - (PJS) New experimental JavaSound mixerprovider, for plugging javasound applications directly to jack (see com.petersalomonsen.jjack.javasound.JJackMixerProviderTest)
 - (PJS) libjjack.c - fixed so that allocation of objects are done once and not for every process() call
 - (PJS) Javasound mixerprovider support for inputs (TargetDataLines)
+- (PJS) Eclipse compiler compliance level set to 1.4
