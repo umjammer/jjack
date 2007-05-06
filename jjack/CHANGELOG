@@ -16,3 +16,4 @@ Version 0.2.X - Release date 2007-??-??
 - (PJS) Javasound mixerprovider support for inputs (TargetDataLines)
 - (PJS) Eclipse compiler compliance level set to 1.4
 - (PJS) ByteIntConverter for supporting various audioformats
+- (PJS) Lines supports 8/16/24/32 bit big and little endian audio formats

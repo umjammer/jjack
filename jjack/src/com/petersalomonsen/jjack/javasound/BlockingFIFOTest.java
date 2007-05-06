@@ -17,7 +17,7 @@ package com.petersalomonsen.jjack.javasound;
  * Simple test of the FIFO buffer - verifying that the data that goes in first comes out first
  * @author Peter Johan Salomonsen
  */
-public class BlockingFIFOTest {
+class BlockingFIFOTest {
 
 	/**
 	 * @param args

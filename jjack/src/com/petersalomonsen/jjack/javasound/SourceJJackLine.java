@@ -11,15 +11,9 @@ package com.petersalomonsen.jjack.javasound;
  *
  * Author:  Peter Johan Salomonsen
  */
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
-
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
-
-import de.gulden.framework.jjack.JJackSystem;
 
 /**
  * JJack SourceDataLine implementation
@@ -39,8 +33,11 @@ public class SourceJJackLine extends JJackLine implements SourceDataLine {
 	}
 
 	public void open(AudioFormat format, int bufferSize) throws LineUnavailableException {
+		this.format = format;		
 		fifo = new BlockingByteFIFO(bufferSize);
-		
+		converter = new ByteIntConverter(format.getSampleSizeInBits()/8,format.isBigEndian(),
+				format.getEncoding() == AudioFormat.Encoding.PCM_SIGNED ? true : false
+		);
 	}
 
 	public int write(byte[] b, int off, int len) {
@@ -118,10 +115,10 @@ public class SourceJJackLine extends JJackLine implements SourceDataLine {
 	float[] readFloat(int length) {
 		checkAndAllocateBuffers(length);
 		
-		fifo.read(byteBuffer.array(), 0, byteBuffer.capacity());
+		fifo.read(byteBuffer, 0, byteBuffer.length);
 		
 		for(int n=0;n<length;n++)
-			floatBuffer[n] = shortBuffer.get(n) / 32768f;
+			floatBuffer[n] = (float)converter.readInt(byteBuffer, n*converter.bytesPerSample) / (1 << format.getSampleSizeInBits()-1);
 	
 		return floatBuffer;
 	}
