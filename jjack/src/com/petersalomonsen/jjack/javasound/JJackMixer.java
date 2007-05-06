@@ -66,7 +66,7 @@ public class JJackMixer extends JJackClient implements Mixer {
 		/**
 		 * Determine number of available in channels
 		 */
-		int inputs = JJackSystem.countPorts(JJackSystem.OUTPUT);		
+		int inputs = JJackSystem.countPorts(JJackSystem.INPUT);		
 		audioFormatsIn = new AudioFormat[8*(inputs)];
 		fillAudioFormats(audioFormatsIn);
 		
