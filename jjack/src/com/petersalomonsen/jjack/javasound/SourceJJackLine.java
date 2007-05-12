@@ -68,8 +68,7 @@ public class SourceJJackLine extends JJackLine implements SourceDataLine {
 	}
 
 	public int getFramePosition() {
-		// TODO Auto-generated method stub
-		return 0;
+		return (int)getLongFramePosition();
 	}
 
 	public float getLevel() {
@@ -78,13 +77,12 @@ public class SourceJJackLine extends JJackLine implements SourceDataLine {
 	}
 
 	public long getLongFramePosition() {
-		// TODO Auto-generated method stub
-		return 0;
+		return fifo.getBufferPosRead() / format.getFrameSize();
 	}
 
 	public long getMicrosecondPosition() {
 		// TODO Auto-generated method stub
-		return 0;
+		return (long)(1000000 * (getLongFramePosition() / format.getFrameRate()));
 	}
 
 	public boolean isActive() {

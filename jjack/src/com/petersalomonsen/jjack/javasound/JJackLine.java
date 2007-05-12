@@ -27,7 +27,7 @@ import de.gulden.framework.jjack.JJackSystem;
  * @author Peter Johan Salomonsen
  *
  */
-public class JJackLine implements Line {
+public abstract class JJackLine implements Line {
 
 	BlockingByteFIFO fifo;
 	ByteIntConverter converter;
@@ -88,6 +88,17 @@ public class JJackLine implements Line {
 	public void removeLineListener(LineListener listener) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public int getFramePosition() {
+		return (int)getLongFramePosition();
+	}
+
+	public abstract long getLongFramePosition();
+	
+	public long getMicrosecondPosition() {
+		// TODO Auto-generated method stub
+		return (long)(1000000 * (getLongFramePosition() / format.getFrameRate()));
 	}
 
 }

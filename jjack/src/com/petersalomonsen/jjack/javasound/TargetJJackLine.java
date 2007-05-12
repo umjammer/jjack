@@ -68,10 +68,6 @@ public class TargetJJackLine extends JJackLine implements TargetDataLine {
 		return format;
 	}
 
-	public int getFramePosition() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	public float getLevel() {
 		// TODO Auto-generated method stub
@@ -79,14 +75,9 @@ public class TargetJJackLine extends JJackLine implements TargetDataLine {
 	}
 
 	public long getLongFramePosition() {
-		// TODO Auto-generated method stub
-		return 0;
+		return fifo.getBufferPosWrite() / format.getFrameSize();
 	}
 
-	public long getMicrosecondPosition() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	public boolean isActive() {
 		// TODO Auto-generated method stub

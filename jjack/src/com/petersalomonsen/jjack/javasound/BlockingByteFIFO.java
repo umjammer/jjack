@@ -177,4 +177,17 @@ public class BlockingByteFIFO {
 		return len;
 	}
 
+	/**
+	 * @return the bufferPosRead
+	 */
+	public long getBufferPosRead() {
+		return bufferPosRead;
+	}
+
+	/**
+	 * @return the bufferPosWrite
+	 */
+	public long getBufferPosWrite() {
+		return bufferPosWrite;
+	}	
 }
