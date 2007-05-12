@@ -50,7 +50,7 @@
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <target name="javac" depends="init">
     <mkdir dir="classes"/>
-    <javac target="1.5" destdir="classes" debug="on">
+    <javac source="1.4" target="1.4" destdir="classes" debug="on">
       <src path="src"/>
       <include name="com/petersalomonsen/**"/>
       <include name="de/gulden/framework/jjack/**"/>
