@@ -19,6 +19,8 @@ import java.util.Vector;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.Control;
 import javax.sound.sampled.Line;
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
@@ -141,23 +143,23 @@ public class JJackMixer extends JJackClient implements Mixer {
 
 	public Line getLine(javax.sound.sampled.Line.Info info)
 			throws LineUnavailableException {
+				
+		Line line = null;
 		
-		//assert(info.getLineClass() == SourceJJackLine.class || info.getLineClass() == TargetJJackLine.class);
-		if (! (info.getLineClass() == SourceJJackLine.class || info.getLineClass() == TargetJJackLine.class) ) throw new InternalError("assertion failed");
-		
-		try {
-			Line line = (Line)info.getLineClass().newInstance();
-			if(line.getClass()==SourceJJackLine.class)
-				sourceLines.add((SourceJJackLine)line);
-			else if(line.getClass()==TargetJJackLine.class)
-				targetLines.add((TargetJJackLine)line);
-			
-			return line; 
-		} catch (InstantiationException e) {
-			throw new LineUnavailableException();
-		} catch (IllegalAccessException e) {
-			throw new LineUnavailableException();
+		if(SourceDataLine.class.isAssignableFrom(info.getLineClass()))
+		{
+			line = new SourceJJackLine();
+			sourceLines.add((SourceJJackLine)line);
 		}
+		else if(TargetDataLine.class.isAssignableFrom(info.getLineClass()))
+		{
+			line = new TargetJJackLine();	
+			targetLines.add((TargetJJackLine)line);
+		}
+		else
+			throw new LineUnavailableException();
+		
+		return line; 
 	}
 
 	public int getMaxLines(javax.sound.sampled.Line.Info info) {
