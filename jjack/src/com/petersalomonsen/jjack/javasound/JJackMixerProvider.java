@@ -17,9 +17,11 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.spi.MixerProvider;
 
+import de.gulden.framework.jjack.JJackSystem;
+
 public class JJackMixerProvider extends MixerProvider {
 	JJackMixerInfo[] infos;
-	JJackMixer mixer;
+	JJackMixer mixer = null;
 	
 	class JJackMixerInfo extends Info
 	{
@@ -36,7 +38,10 @@ public class JJackMixerProvider extends MixerProvider {
 			new JJackMixerInfo("JJack","jjack.berlios.de","JJack javasound provider","0.1")	
 		};
 		
-		mixer = new JJackMixer();
+		if(JJackSystem.isInitialized())
+			mixer = new JJackMixer();
+		else
+			System.out.println("JACK is not available..");
 	}
 	
 	/**

@@ -449,4 +449,8 @@ public class JJackSystem implements JJackConstants {
         }
     }
 
+    public static boolean isInitialized()
+    {
+    	return initialized;
+    }
 } // end JJackSystem
