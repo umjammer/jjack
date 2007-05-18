@@ -19,3 +19,4 @@ Version 0.2.X - Release date 2007-??-??
 - (PJS) Lines supports 8/16/24/32 bit big and little endian audio formats
 - (PJS) Fixed Mixer and line support indication logic to comply with javasound
 - (PJS) longFrame, microsecond, and frameposition implemented
+- (PJS) DataLine.Info now outputs audioformat info

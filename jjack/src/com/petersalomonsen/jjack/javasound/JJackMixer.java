@@ -18,6 +18,7 @@ import java.util.Vector;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.Control;
+import javax.sound.sampled.DataLine;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
@@ -175,33 +176,48 @@ public class JJackMixer extends JJackClient implements Mixer {
 	public javax.sound.sampled.Line.Info[] getSourceLineInfo() {
 		
 		return new Line.Info[] {
-				new Line.Info(SourceJJackLine.class)
+				new DataLine.Info(SourceJJackLine.class,audioFormatsOut,32,-1)
 		};
 	}
 
 	public javax.sound.sampled.Line.Info[] getSourceLineInfo(
 			javax.sound.sampled.Line.Info info) {
 		
-		return new Line.Info[] {
-				new Line.Info(SourceJJackLine.class)
-		};
+		Line.Info[] infos = getSourceLineInfo();
+		Vector matchedInfos = new Vector(); 
+		
+		for(int n=0;n<infos.length;n++)
+		{
+			info.matches(infos[n]);
+			matchedInfos.add(info);
+		}
+		
+		return (Line.Info[])matchedInfos.toArray();
 	}
 
 	public Line[] getSourceLines() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public javax.sound.sampled.Line.Info[] getTargetLineInfo() {
 		return new Line.Info[] {
-				new Line.Info(TargetJJackLine.class)
+				new DataLine.Info(SourceJJackLine.class,audioFormatsIn,32,-1)
 		};
 	}
 
 	public javax.sound.sampled.Line.Info[] getTargetLineInfo(
 			javax.sound.sampled.Line.Info info) {
-		// TODO Auto-generated method stub
-		return null;
+
+		Line.Info[] infos = getTargetLineInfo();
+		Vector matchedInfos = new Vector(); 
+		
+		for(int n=0;n<infos.length;n++)
+		{
+			info.matches(infos[n]);
+			matchedInfos.add(info);
+		}
+		
+		return (Line.Info[])matchedInfos.toArray();
 	}
 
 	public Line[] getTargetLines() {
