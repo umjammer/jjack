@@ -68,7 +68,6 @@
       <include name="de/gulden/util/swing/VUMeter.java"/>
       <include name="de/gulden/util/nio/FifoFloat.java"/>
       <include name="de/gulden/util/nio/RingFloat.java"/>
-      <include name="META-INF/services/**"/>      
     </javac>
         
     <mkdir dir="classes/de/gulden/application/jjack/res"/>
@@ -78,6 +77,10 @@
     <mkdir dir="classes/de/gulden/application/jjack/clients/res"/>
     <copy todir="classes/de/gulden/application/jjack/clients/res">
       <fileset dir="src/de/gulden/application/jjack/clients/res"/>
+    </copy>
+  	<mkdir dir="classes/META-INF/services" />
+    <copy todir="META-INF/services/">
+  		<fileset dir="src/META-INF/services" />
     </copy>
   </target>
 

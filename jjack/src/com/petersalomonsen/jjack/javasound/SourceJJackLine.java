@@ -48,56 +48,8 @@ public class SourceJJackLine extends JJackLine implements SourceDataLine {
 		return fifo.availableWrite();
 	}
 
-	public void drain() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void flush() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public AudioFormat getFormat() {
-		return format;
-	}
-
-	public int getFramePosition() {
-		return (int)getLongFramePosition();
-	}
-
-	public float getLevel() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 	public long getLongFramePosition() {
 		return fifo.getBufferPosRead() / format.getFrameSize();
-	}
-
-	public long getMicrosecondPosition() {
-		// TODO Auto-generated method stub
-		return (long)(1000000 * (getLongFramePosition() / format.getFrameRate()));
-	}
-
-	public boolean isActive() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isRunning() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public void start() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void stop() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	/**

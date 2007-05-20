@@ -15,7 +15,7 @@ package com.petersalomonsen.jjack.javasound;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.Control;
-import javax.sound.sampled.Line;
+import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Control.Type;
@@ -27,7 +27,7 @@ import de.gulden.framework.jjack.JJackSystem;
  * @author Peter Johan Salomonsen
  *
  */
-public abstract class JJackLine implements Line {
+public abstract class JJackLine implements DataLine {
 
 	BlockingByteFIFO fifo;
 	ByteIntConverter converter;
@@ -65,11 +65,6 @@ public abstract class JJackLine implements Line {
 		return null;
 	}
 
-	public Info getLineInfo() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public boolean isControlSupported(Type control) {
 		// TODO Auto-generated method stub
 		return false;
@@ -101,8 +96,51 @@ public abstract class JJackLine implements Line {
 	public abstract long getLongFramePosition();
 	
 	public long getMicrosecondPosition() {
-		// TODO Auto-generated method stub
 		return (long)(1000000 * (getLongFramePosition() / format.getFrameRate()));
+	}
+
+	public abstract int available();
+
+	public void drain() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void flush() {
+		fifo.flush();
+	}
+
+	public AudioFormat getFormat() {
+		return format;
+	}
+
+	public float getLevel() {
+		return 0;
+	}
+
+	public boolean isActive() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isRunning() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void start() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void stop() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public javax.sound.sampled.Line.Info getLineInfo() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

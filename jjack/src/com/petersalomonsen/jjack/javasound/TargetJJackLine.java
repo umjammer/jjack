@@ -49,49 +49,9 @@ public class TargetJJackLine extends JJackLine implements TargetDataLine {
 		return fifo.availableRead();
 	}
 
-	public void drain() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void flush() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public AudioFormat getFormat() {
-		return format;
-	}
-
-
-	public float getLevel() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	public long getLongFramePosition() {
 		return fifo.getBufferPosWrite() / format.getFrameSize();
-	}
-
-
-	public boolean isActive() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isRunning() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public void start() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void stop() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	/**

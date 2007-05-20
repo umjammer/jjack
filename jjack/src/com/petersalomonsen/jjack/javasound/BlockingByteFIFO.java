@@ -199,4 +199,13 @@ public class BlockingByteFIFO {
 	{
 		return buffer.length;
 	}
+
+	/**
+	 * Discard unread data
+	 *
+	 */
+	public void flush()
+	{
+		bufferPosRead = bufferPosWrite;
+	}
 }
