@@ -58,11 +58,6 @@ public class SourceJJackLine extends JJackLine implements SourceDataLine {
 		
 	}
 
-	public int getBufferSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 	public AudioFormat getFormat() {
 		return format;
 	}

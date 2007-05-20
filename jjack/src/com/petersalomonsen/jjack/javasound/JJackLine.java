@@ -75,6 +75,10 @@ public abstract class JJackLine implements Line {
 		return false;
 	}
 
+	public int getBufferSize() {
+		return fifo.getBufferSize();
+	}
+
 	public boolean isOpen() {
 		// TODO Auto-generated method stub
 		return false;

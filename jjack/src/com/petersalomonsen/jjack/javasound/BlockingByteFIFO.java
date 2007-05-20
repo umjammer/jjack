@@ -189,5 +189,14 @@ public class BlockingByteFIFO {
 	 */
 	public long getBufferPosWrite() {
 		return bufferPosWrite;
-	}	
+	}
+	
+	/**
+	 * Return the size of the buffer
+	 * @return
+	 */
+	public int getBufferSize()
+	{
+		return buffer.length;
+	}
 }

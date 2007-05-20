@@ -59,11 +59,6 @@ public class TargetJJackLine extends JJackLine implements TargetDataLine {
 		
 	}
 
-	public int getBufferSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 	public AudioFormat getFormat() {
 		return format;
 	}

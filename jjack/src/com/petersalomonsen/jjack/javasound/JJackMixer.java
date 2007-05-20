@@ -169,8 +169,7 @@ public class JJackMixer extends JJackClient implements Mixer {
 	}
 
 	public Info getMixerInfo() {
-		// TODO Auto-generated method stub
-		return null;
+		return JJackMixerInfo.getInfo();
 	}
 
 	public javax.sound.sampled.Line.Info[] getSourceLineInfo() {

@@ -21,21 +21,12 @@ import de.gulden.framework.jjack.JJackSystem;
 
 public class JJackMixerProvider extends MixerProvider {
 	JJackMixerInfo[] infos;
-	JJackMixer mixer = null;
-	
-	class JJackMixerInfo extends Info
-	{
-
-		protected JJackMixerInfo(String name, String vendor, String description, String version) {
-			super(name, vendor, description, version);
-		}		
-	}
-	
+	JJackMixer mixer = null;	
 	
 	public JJackMixerProvider()
 	{
 		infos = new JJackMixerInfo[] {
-			new JJackMixerInfo("JJack","jjack.berlios.de","JJack javasound provider","0.1")	
+			JJackMixerInfo.getInfo()	
 		};
 		
 		if(JJackSystem.isInitialized())
