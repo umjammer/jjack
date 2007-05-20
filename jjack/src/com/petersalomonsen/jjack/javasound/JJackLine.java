@@ -34,6 +34,8 @@ public abstract class JJackLine implements DataLine {
 	AudioFormat format = new AudioFormat(JJackSystem.getSampleRate(),16,2,true,false);
 	DataLine.Info info;
 	
+	boolean open = false;
+	
 	float[] floatBuffer = null;
 	byte[] byteBuffer = null;
 	
@@ -69,11 +71,11 @@ public abstract class JJackLine implements DataLine {
 		);
 		
 		 info = new DataLine.Info(this.getClass(),format);
+		 open = true;
 	}
 
 	public void close() {
-		// TODO Auto-generated method stub
-		
+		open = false;
 	}
 
 	public Control getControl(Type control) {
@@ -96,8 +98,7 @@ public abstract class JJackLine implements DataLine {
 	}
 
 	public boolean isOpen() {
-		// TODO Auto-generated method stub
-		return false;
+		return open;
 	}
 
 	public void removeLineListener(LineListener listener) {
