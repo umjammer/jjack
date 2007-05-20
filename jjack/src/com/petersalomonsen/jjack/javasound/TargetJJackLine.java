@@ -12,8 +12,6 @@ package com.petersalomonsen.jjack.javasound;
  * Author:  Peter Johan Salomonsen
  */
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
 /**
@@ -22,25 +20,6 @@ import javax.sound.sampled.TargetDataLine;
  *
  */
 public class TargetJJackLine extends JJackLine implements TargetDataLine {
-	
-	public void open() throws LineUnavailableException
-	{
-		open(format);
-	}
-	
-	public void open(AudioFormat format) throws LineUnavailableException {
-		open(format,65536);
-		
-	}
-
-	public void open(AudioFormat format, int bufferSize) throws LineUnavailableException {
-		this.format = format;
-		fifo = new BlockingByteFIFO(bufferSize);
-		converter = new ByteIntConverter(format.getSampleSizeInBits()/8,format.isBigEndian(),
-				format.getEncoding() == AudioFormat.Encoding.PCM_SIGNED ? true : false
-		);
-	}
-
 	public int read(byte[] b, int off, int len) {
 		return fifo.read(b, off, len);
 	}

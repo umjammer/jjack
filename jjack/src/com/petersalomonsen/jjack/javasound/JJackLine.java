@@ -32,7 +32,8 @@ public abstract class JJackLine implements DataLine {
 	BlockingByteFIFO fifo;
 	ByteIntConverter converter;
 	AudioFormat format = new AudioFormat(JJackSystem.getSampleRate(),16,2,true,false);
-
+	DataLine.Info info;
+	
 	float[] floatBuffer = null;
 	byte[] byteBuffer = null;
 	
@@ -48,6 +49,26 @@ public abstract class JJackLine implements DataLine {
 	public void addLineListener(LineListener listener) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void open() throws LineUnavailableException
+	{
+		open(format);
+	}
+	
+	public void open(AudioFormat format) throws LineUnavailableException {
+		open(format,65536);
+		
+	}
+
+	public void open(AudioFormat format, int bufferSize) throws LineUnavailableException {
+		this.format = format;		
+		fifo = new BlockingByteFIFO(bufferSize);
+		converter = new ByteIntConverter(format.getSampleSizeInBits()/8,format.isBigEndian(),
+				format.getEncoding() == AudioFormat.Encoding.PCM_SIGNED ? true : false
+		);
+		
+		 info = new DataLine.Info(this.getClass(),format);
 	}
 
 	public void close() {
@@ -77,11 +98,6 @@ public abstract class JJackLine implements DataLine {
 	public boolean isOpen() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	public void open() throws LineUnavailableException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void removeLineListener(LineListener listener) {
@@ -139,8 +155,7 @@ public abstract class JJackLine implements DataLine {
 	}
 
 	public javax.sound.sampled.Line.Info getLineInfo() {
-		// TODO Auto-generated method stub
-		return null;
+		return info;
 	}
 
 }
