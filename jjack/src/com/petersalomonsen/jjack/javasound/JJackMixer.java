@@ -13,7 +13,6 @@ package com.petersalomonsen.jjack.javasound;
  * Author:  Peter Johan Salomonsen
  */
 
-import java.util.Enumeration;
 import java.util.Vector;
 
 import javax.sound.sampled.AudioFormat;
@@ -100,9 +99,9 @@ public class JJackMixer extends JJackClient implements Mixer {
 		
 		int channelIndex = 0;
 		//for(SourceJJackLine line : sourceLines)
-		for (Enumeration en = sourceLines.elements(); en.hasMoreElements(); )
+		for (int lineIndex = 0;lineIndex<sourceLines.size();lineIndex++ )
 		{
-			SourceJJackLine line = (SourceJJackLine)en.nextElement();
+			SourceJJackLine line = (SourceJJackLine)sourceLines.get(lineIndex);
 			int channels = line.getFormat().getChannels();
 			int length = e.getOutput().capacity()*channels;
 		
@@ -121,9 +120,9 @@ public class JJackMixer extends JJackClient implements Mixer {
 		channelIndex = 0;
 		
 		//for(TargetJJackLine line : targetLines)
-		for (Enumeration en = targetLines.elements(); en.hasMoreElements(); )
+		for (int lineIndex = 0;lineIndex<targetLines.size();lineIndex++ )
 		{
-			TargetJJackLine line = (TargetJJackLine)en.nextElement();
+			TargetJJackLine line = (TargetJJackLine)targetLines.get(lineIndex);
 			int channels = line.getFormat().getChannels();
 			int length = e.getInput().capacity()*channels;
 			
