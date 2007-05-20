@@ -79,7 +79,7 @@
       <fileset dir="src/de/gulden/application/jjack/clients/res"/>
     </copy>
   	<mkdir dir="classes/META-INF/services" />
-    <copy todir="META-INF/services/">
+    <copy todir="classes/META-INF/services/">
   		<fileset dir="src/META-INF/services" />
     </copy>
   </target>
