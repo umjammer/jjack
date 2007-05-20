@@ -42,6 +42,7 @@ public class JJackMixerProviderTest {
 		for (int i = 0; i < infos.length; i++)
 		{
 			Info info = infos[i];
+			System.out.println(info.getName());
 			if(info.getName().equals("JJack"))
 				jackMixerInfo = info;
 		}

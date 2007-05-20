@@ -200,7 +200,7 @@ public class JJackMixer extends JJackClient implements Mixer {
 
 	public javax.sound.sampled.Line.Info[] getTargetLineInfo() {
 		return new Line.Info[] {
-				new DataLine.Info(SourceJJackLine.class,audioFormatsIn,32,-1)
+				new DataLine.Info(TargetJJackLine.class,audioFormatsIn,32,-1)
 		};
 	}
 
