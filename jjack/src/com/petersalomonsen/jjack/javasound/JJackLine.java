@@ -33,11 +33,17 @@ public abstract class JJackLine implements DataLine {
 	ByteIntConverter converter;
 	AudioFormat format = new AudioFormat(JJackSystem.getSampleRate(),16,2,true,false);
 	DataLine.Info info;
+	JJackMixer mixer;
 	
 	boolean open = false;
 	
 	float[] floatBuffer = null;
 	byte[] byteBuffer = null;
+
+	public JJackLine(JJackMixer mixer)
+	{
+		this.mixer = mixer;
+	}
 	
 	protected final void checkAndAllocateBuffers(int length)
 	{
@@ -71,10 +77,12 @@ public abstract class JJackLine implements DataLine {
 		);
 		
 		 info = new DataLine.Info(this.getClass(),format);
+		 mixer.registerOpenLine(this);
 		 open = true;
 	}
 
 	public void close() {
+		mixer.unregisterLine(this);
 		open = false;
 	}
 

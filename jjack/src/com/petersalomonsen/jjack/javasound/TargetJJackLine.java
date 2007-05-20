@@ -20,6 +20,11 @@ import javax.sound.sampled.TargetDataLine;
  *
  */
 public class TargetJJackLine extends JJackLine implements TargetDataLine {
+
+	public TargetJJackLine(JJackMixer mixer) {
+		super(mixer);
+	}
+
 	public int read(byte[] b, int off, int len) {
 		return fifo.read(b, off, len);
 	}

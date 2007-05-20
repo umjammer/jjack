@@ -20,6 +20,10 @@ import javax.sound.sampled.SourceDataLine;
  */
 public class SourceJJackLine extends JJackLine implements SourceDataLine {
 		
+	public SourceJJackLine(JJackMixer mixer) {
+		super(mixer);
+	}
+
 	public int write(byte[] b, int off, int len) {
 		return fifo.write(b, off, len);
 	}

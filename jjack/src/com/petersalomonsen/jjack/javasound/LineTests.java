@@ -14,6 +14,10 @@ package com.petersalomonsen.jjack.javasound;
 
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.TargetDataLine;
 
 
 /**
@@ -33,17 +37,22 @@ class LineTests {
 		for(int n=0;n<audioFormats.length;n++)
 			audioFormats[n] = new AudioFormat(44100,8+(8*(n%4)),((n/8)+1),true,((n%8)/4) == 0 ? false : true);
 		
+		Mixer mixer = new JJackMixerProvider().getMixer(JJackMixerInfo.getInfo());
 		for(int fmIndex=0;fmIndex<audioFormats.length;fmIndex++)
 		{
 			AudioFormat fmt = audioFormats[fmIndex];
 			System.out.println(fmt);
 
-			SourceJJackLine src = new SourceJJackLine();
+			SourceJJackLine src = (SourceJJackLine)mixer.getLine(new Line.Info(SourceDataLine.class));
 			src.open(fmt);
 			
-			TargetJJackLine tgt = new TargetJJackLine();
+			TargetJJackLine tgt = (TargetJJackLine)mixer.getLine(new Line.Info(TargetDataLine.class));
 			tgt.open(fmt);
 
+			// Close since we don't want jack to read/write
+			src.close();
+			tgt.close();
+			
 			ByteIntConverter conv = new ByteIntConverter(fmt.getSampleSizeInBits()/8,fmt.isBigEndian(),
 					fmt.getEncoding() == AudioFormat.Encoding.PCM_SIGNED ? true : false
 					);
@@ -70,8 +79,12 @@ class LineTests {
 				
 				long ret = conv.readInt(b, n);
 				
-				System.out.println(ret+" "+(ret==val));
+				if(ret==val)
+					System.out.println(ret+" "+(ret==val));
+				else
+					System.err.println(ret+" "+(ret==val));
 			}
+			
 		}
 	}
 }

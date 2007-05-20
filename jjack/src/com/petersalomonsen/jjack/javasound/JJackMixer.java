@@ -149,13 +149,11 @@ public class JJackMixer extends JJackClient implements Mixer {
 		
 		if(SourceDataLine.class.isAssignableFrom(info.getLineClass()))
 		{
-			line = new SourceJJackLine();
-			sourceLines.add((SourceJJackLine)line);
+			line = new SourceJJackLine(this);
 		}
 		else if(TargetDataLine.class.isAssignableFrom(info.getLineClass()))
 		{
-			line = new TargetJJackLine();	
-			targetLines.add((TargetJJackLine)line);
+			line = new TargetJJackLine(this);	
 		}
 		else
 			throw new LineUnavailableException();
@@ -163,6 +161,22 @@ public class JJackMixer extends JJackClient implements Mixer {
 		return line; 
 	}
 
+	void registerOpenLine(JJackLine line)
+	{
+		if(line.getClass()==SourceJJackLine.class)
+			sourceLines.add(line);
+		else if(line.getClass()==TargetJJackLine.class)
+			targetLines.add(line);
+	}
+	
+	void unregisterLine(JJackLine line)
+	{
+		if(line.getClass()==SourceJJackLine.class)
+			sourceLines.remove(line);
+		else if(line.getClass()==TargetJJackLine.class)
+			targetLines.remove(line);
+	}
+	
 	public int getMaxLines(javax.sound.sampled.Line.Info info) {
 		// TODO Auto-generated method stub
 		return 0;
