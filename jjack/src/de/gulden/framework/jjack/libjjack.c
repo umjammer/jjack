@@ -8,9 +8,16 @@
  * Date:     2004-11-16
  * Author:   J. Gulden
  * Modified by: Peter J. Salomonsen
- * 
+ * Modified by: Andrew Cooke)
  * 2006-12-17 (PJS):	Changed INF pointer to long (64bit) for amd64 support
  * 2007-04-09 (PJS):	No longer object allocation for each process call
+ * 2007-07-10 (AC):		- The size of the sample is found using size() rather than being
+ *						  hardcoded as 4
+ *						- Some ints are cast to jsize which is long on 64 bit systems (see
+ *						  ftp://www6.software.ibm.com/software/developer/jdk/64bitporting/64BitJavaPortingGuide.pdf)
+ *						- The allocation of inf->byteBufferArray[mode] is made outside the loop
+ *  					  over ports.  This avoids a null pointer exception in Java when there are
+ * 						  zero ports (eg for output on a "consumer only" process).		
  * 
  * Compile commands:
  * gcc -fPIC -I/usr/java/java/include -I/usr/java/java/include/linux -I/usr/include/jack -c libjjack.c
@@ -343,17 +350,17 @@ int process(jack_nframes_t nframes, void *arg) {
     
     /* allocate DirectByteBuffer objects */
     for (mode=INPUT; mode<=OUTPUT; mode++) {
+		if(inf->byteBufferArray[mode]==0)
+           	inf->byteBufferArray[mode] = (*env)->NewObjectArray(env, (jsize)inf->portCount[mode], inf->cls_ByteBuffer, NULL);
        	for (i=0; i < inf->portCount[mode]; i++) {
-			if(inf->byteBufferArray[mode]==0)
-            	inf->byteBufferArray[mode] = (*env)->NewObjectArray(env, inf->portCount[mode], inf->cls_ByteBuffer, NULL);
 		    // Only reallocate if the buffer position changes
 			jack_default_audio_sample_t *tempSampleBuffer = (jack_default_audio_sample_t *) jack_port_get_buffer(inf->port[mode][i], nframes);
 			
 			if(tempSampleBuffer!=inf->sampleBuffers[mode][i])
 			{
 				inf->sampleBuffers[mode][i] = tempSampleBuffer;
-        		jobject byteBuffer = (*env)->NewDirectByteBuffer(env , inf->sampleBuffers[mode][i] , nframes*4);
-            	(*env)->SetObjectArrayElement(env, inf->byteBufferArray[mode], i, byteBuffer);
+        		jobject byteBuffer = (*env)->NewDirectByteBuffer(env, inf->sampleBuffers[mode][i], (jsize)(nframes*sizeof(jack_default_audio_sample_t)));
+            	(*env)->SetObjectArrayElement(env, inf->byteBufferArray[mode], (jsize)i, byteBuffer);
 			}
         }
     }

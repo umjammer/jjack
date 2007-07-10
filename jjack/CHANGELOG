@@ -20,3 +20,10 @@ Version 0.2.X - Release date 2007-??-??
 - (PJS) Fixed Mixer and line support indication logic to comply with javasound
 - (PJS) longFrame, microsecond, and frameposition implemented
 - (PJS) DataLine.Info now outputs audioformat info, Mixer.Info, buffersize etc.
+- (AC)		- The size of the sample is found using size() rather than being hardcoded as 4
+			- Some ints are cast to jsize which is long on 64 bit systems (see
+			  ftp://www6.software.ibm.com/software/developer/jdk/64bitporting/64BitJavaPortingGuide.pdf)
+			- The allocation of inf->byteBufferArray[mode] is made outside the loop
+			  over ports.  This avoids a null pointer exception in Java when there are
+			  zero ports (eg for output on a "consumer only" process).		
+ 
