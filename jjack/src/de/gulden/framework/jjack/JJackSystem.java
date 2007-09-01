@@ -133,18 +133,30 @@ public class JJackSystem implements JJackConstants {
     // ------------------------------------------------------------------------
 
     static {
-    	try
-    	{
-    		// try loading native library from system lib (library path)
-    		System.loadLibrary("jjack");
-    	} catch(Throwable e)
-    	{
-    		// Else look in the local lib folder
-    		File file = new File("lib/"+System.getProperty("os.arch")+"/"+System.getProperty("os.name")+"/libjjack.so");
-            String libJJackFileName = file.getAbsolutePath();
-            System.load(libJJackFileName);	
-    	}
+        String libJJackFileName=null;
+        try
+        {
+            // try loading native library from system lib (library path)
+            System.loadLibrary("jjack");
+            System.out.println("native jjack library loaded using system library path");
+            init1();
+        } catch(Throwable e) {
+            try {
+                File file = new File("lib/"+System.getProperty("os.arch")+"/"+System.getProperty("os.name")+"/libjjack.so");
+                libJJackFileName = file.getAbsolutePath();
+                System.load(libJJackFileName);
+                System.out.println("loaded jjack native library "+ libJJackFileName );
+                init1();
+            } catch (Throwable e2) {
+                System.out.println("Could not load jjack native library");
+                System.out.println("Tried system library path and " + libJJackFileName);
+                e.printStackTrace();
+                e2.printStackTrace();
+            }
+        }
+    }
 
+    static void init1() {
         // set parameters from system properties
         clientName = System.getProperty(PROPERTY_CLIENT_NAME, DEFAULT_CLIENT_NAME);
         String s = System.getProperty(PROPERTY_VERBOSE, DEFAULT_VERBOSE);
@@ -162,12 +174,13 @@ public class JJackSystem implements JJackConstants {
         initialized = false;
         running = false;
         try {
-        	init();
-        	start();
+            init();
+            start();
         } catch (JJackException jje) {
-        	initError = jje;
+            initError = jje;
         }
     }
+
 
     // ------------------------------------------------------------------------
     // --- constructor                                                      ---
