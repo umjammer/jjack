@@ -1,29 +1,25 @@
 /*
  * Project: JJack - Java bridge API for the JACK Audio Connection Kit
- * Class:   de.gulden.application.jjack.clients.ui.OscillatorUI
- * Version: 0.2
- *
- * Date:    2004-11-16
+ * Class:   de.gulden.application.jjack.clients.ui.OscilloscopeUI
  *
  * Licensed under the GNU Lesser General Public License (LGPL).
- * This comes with NO WARRANTY. See file license.txt for details.
+ * This comes with NO WARRANTY. See file License.txt for details.
  *
  * Author:  Jens Gulden
  */
 
 package de.gulden.application.jjack.clients.ui;
 
-import de.gulden.application.jjack.clients.Oscillator;
+import de.gulden.application.jjack.clients.Oscilloscope;
 import java.awt.*;
 import java.nio.FloatBuffer;
 
 /**
- * User interface for class Oscillator.
+ * User interface for class Oscilloscope.
  *  
  * @author  Jens Gulden
- * @version  0.2
  */
-public class OscillatorUI extends AnimatedUIAbstract {
+public class OscilloscopeUI extends AnimatedUIAbstract {
 
     // ------------------------------------------------------------------------
     // --- final static field                                               ---
@@ -36,7 +32,7 @@ public class OscillatorUI extends AnimatedUIAbstract {
     // --- fields                                                           ---
     // ------------------------------------------------------------------------
 
-    protected Oscillator parent;
+    protected Oscilloscope parent;
 
     protected int[] ring = new int[RING_SIZE];
 
@@ -49,9 +45,9 @@ public class OscillatorUI extends AnimatedUIAbstract {
     // --- constructor                                                      ---
     // ------------------------------------------------------------------------
 
-    public OscillatorUI(Oscillator oscillator) {
-        super(oscillator.getFps());
-        this.parent = oscillator; // oscillator displayed by this
+    public OscilloscopeUI(Oscilloscope oscilloscope) {
+        super(oscilloscope.getFps());
+        this.parent = oscilloscope; // oscilloscope displayed by this
         setBackground(new Color(255, 255, 255));
         setMinimumSize(new Dimension(100, 50));
         setPreferredSize(new Dimension(300, 100));
@@ -174,4 +170,4 @@ public class OscillatorUI extends AnimatedUIAbstract {
         return (float) (sum/total);
     }
 
-} // end OscillatorUI
+} // end OscilloscopeUI

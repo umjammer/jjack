@@ -1,3 +1,13 @@
+/*
+ * Project: JJack - Java bridge API for the JACK Audio Connection Kit
+ * Class:   de.gulden.framework.jjack.util.JJackRecorder
+ *
+ * Licensed under the GNU Lesser General Public License (LGPL).
+ * This comes with NO WARRANTY. See file License.txt for details.
+ *
+ * Author:  Jens Gulden
+ */
+
 package de.gulden.framework.jjack.util;
 
 import de.gulden.framework.jjack.JJackAudioEvent;

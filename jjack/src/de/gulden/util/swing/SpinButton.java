@@ -1,12 +1,9 @@
 /*
  * Project: Gulden's Utilities [here as part of JJack]
  * Class:   de.gulden.util.swing.SpinButton
- * Version: 0.2
- *
- * Date:    2004-11-16
  *
  * Licensed under the GNU Lesser General Public License (LGPL).
- * This comes with NO WARRANTY. See file license.txt for details.
+ * This comes with NO WARRANTY. See file License.txt for details.
  * Note: This utility class is only provided for compiling JJack,
  * it is not part of JJack's CVS tree.
  *
@@ -24,7 +21,6 @@ import java.awt.event.*;
 /**
  *  
  * @author  Jens Gulden
- * @version  0.2
  */
 public class SpinButton extends JSlider implements ChangeListener, MouseListener, MouseMotionListener {
 

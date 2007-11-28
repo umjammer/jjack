@@ -1,13 +1,19 @@
-Version 0.2.X - Release date 2007-??-??
------------------------------------------------------
-
-- Relative basedir in build.xml
-- Use JAVA_HOME environment variable for ant build java dependencies. Example from shell: JAVA_HOME=/usr/lib/jvm/java-1.5.0-sun ant all
-- All files created during the make process are now in .cvsignore
-- INF pointer type is now 64-bit (long) for AMD64 support
-- fix: auto-connecting output ports now works
-- added utility clients JJackPlayer and JJackRecorder in new package de.gulden.framework.jjack.util
-- added benchmark tool in de.gulden.framework.jjack.util.benchmark
+Version 0.3, 2007-11-??
+------------------------------------------------------------------------------
+- (JG)  updated documentation, web-site and readme
+- (JG)  stripped version and date information from source-files in CVS
+        (will be added to the archive's sources at build-time)
+- (JG)  renamed 'Oscillator' to 'Oscilloscope'
+- (JG)  old changelog information from Readme.txt moved to CHANGELOG,
+        continue recording of changes here
+- (PJL) error messages if the native library cannot be loaded properly        
+- (PJS) Relative basedir in build.xml
+- (PJS) Use JAVA_HOME environment variable for ant build java dependencies. Example from shell: JAVA_HOME=/usr/lib/jvm/java-1.5.0-sun ant all
+- (PJS) All files created during the make process are now in .cvsignore
+- (PJS) INF pointer type is now 64-bit (long) for AMD64 support
+- (JG)  fix: auto-connecting output ports now works
+- (JG)  added utility clients JJackPlayer and JJackRecorder in new package de.gulden.framework.jjack.util
+- (JG)  added benchmark tool in de.gulden.framework.jjack.util.benchmark
 - (PJS) ability to load native library from local lib folder (failover if libjjack.so not present in system library path)
 - (PJS) Now can be launched as an Eclipse project
 - (PJS) Added JJackQuickClientLaunch which lets you select the client to launch from a dropdown
@@ -20,10 +26,35 @@ Version 0.2.X - Release date 2007-??-??
 - (PJS) Fixed Mixer and line support indication logic to comply with javasound
 - (PJS) longFrame, microsecond, and frameposition implemented
 - (PJS) DataLine.Info now outputs audioformat info, Mixer.Info, buffersize etc.
-- (AC)		- The size of the sample is found using size() rather than being hardcoded as 4
-			- Some ints are cast to jsize which is long on 64 bit systems (see
-			  ftp://www6.software.ibm.com/software/developer/jdk/64bitporting/64BitJavaPortingGuide.pdf)
-			- The allocation of inf->byteBufferArray[mode] is made outside the loop
-			  over ports.  This avoids a null pointer exception in Java when there are
-			  zero ports (eg for output on a "consumer only" process).		
+- (AC)  The size of the sample is found using size() rather than being hardcoded as 4
+- (AC)  Some ints are cast to jsize which is long on 64 bit systems (see
+        ftp://www6.software.ibm.com/software/developer/jdk/64bitporting/64BitJavaPortingGuide.pdf)
+- (AC)  The allocation of inf->byteBufferArray[mode] is made outside the loop
+        over ports. This avoids a null pointer exception in Java when there are
+        zero ports (eg for output on a "consumer only" process).		
+
+Version 0.2.1, 2006-12-02
+------------------------------------------------------------------------------
+- (JG)  streamlining of the build-process and completion of files in CVS:
+        - distinguishing between project-build and distribution-build
+        - inclusion of directories make, bin and doc into CVS
+        Now all files needed to perform a full project-build are available via CVS, 
+        including the ANT project-build script. The source codes have not changed
+        since version 0.2.
+
+Version 0.2, 2004-11-16
+------------------------------------------------------------------------------
+- (JG)  Most changes apply to libjjack.c, mainly the use of AttachCurrentThread() to
+        enable Java-callbacks by the JACK thread. This implies:
+        - no extra thread needed any longer to interact with the JACK thread,
+        class JJackSystemThread has become obsolete and has been removed.
+        - the pthreads-library is no longer needed by the native implementation, as no
+        more semaphores are required for thread synchronization.
+- (JG)  Some changes to class de.gulden.framework.jjack.JJackSystem, initialization
+        will no longer start an internal processing thread.
+- (JG)  Some enhancements to this readme-file.
+
+Version 0.1, 2004-05-25
+------------------------------------------------------------------------------
+- (JG)  Initial release.
  

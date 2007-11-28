@@ -2,26 +2,28 @@
  * Project:  JJack - Java bridge API for the JACK Audio Connection Kit
  *
  * Module:   libjjack.so
- *           Native implementation of Jack-to-Java bridge.
  *
- * Version:  0.2
- * Date:     2004-11-16
- * Author:   J. Gulden
+ * Native implementation of class de.gulden.framework.jjack.JJackSystem.
+ *
+ * Author:      Jens Gulden
  * Modified by: Peter J. Salomonsen
- * Modified by: Andrew Cooke)
- * 2006-12-17 (PJS):	Changed INF pointer to long (64bit) for amd64 support
- * 2007-04-09 (PJS):	No longer object allocation for each process call
- * 2007-07-10 (AC):		- The size of the sample is found using size() rather than being
- *						  hardcoded as 4
- *						- Some ints are cast to jsize which is long on 64 bit systems (see
- *						  ftp://www6.software.ibm.com/software/developer/jdk/64bitporting/64BitJavaPortingGuide.pdf)
- *						- The allocation of inf->byteBufferArray[mode] is made outside the loop
- *  					  over ports.  This avoids a null pointer exception in Java when there are
- * 						  zero ports (eg for output on a "consumer only" process).		
+ * Modified by: Andrew Cooke
+ * 2006-12-17 (PJS): Changed INF pointer to long (64bit) for amd64 support
+ * 2007-04-09 (PJS): No longer object allocation for each process call
+ * 2007-07-10 (AC):  - The size of the sample is found using size() rather than being
+ *                     hardcoded as 4
+ *                   - Some ints are cast to jsize which is long on 64 bit systems (see
+ *                     ftp://www6.software.ibm.com/software/developer/jdk/64bitporting/64BitJavaPortingGuide.pdf)
+ *                   - The allocation of inf->byteBufferArray[mode] is made outside the loop
+�*                     over ports. This avoids a null pointer exception in Java when there are
+�*                     zero ports (eg for output on a "consumer only" process).		
  * 
- * Compile commands:
+ * Possible compile commands:
+ *
  * gcc -fPIC -I/usr/java/java/include -I/usr/java/java/include/linux -I/usr/include/jack -c libjjack.c
  * gcc -shared -fPIC -ljack -o libjjack.so libjjack.o
+ *
+ * You may need a symlink 'libjack.so' -> 'libjack0.1xx.x' inside /usr/lib.
  */
 
 #include <stdlib.h>

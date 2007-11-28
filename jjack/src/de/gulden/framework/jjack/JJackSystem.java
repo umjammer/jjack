@@ -1,12 +1,9 @@
 /*
  * Project: JJack - Java bridge API for the JACK Audio Connection Kit
  * Class:   de.gulden.framework.jjack.JJackSystem
- * Version: 0.2
- *
- * Date:    2004-11-16
  *
  * Licensed under the GNU Lesser General Public License (LGPL).
- * This comes with NO WARRANTY. See file license.txt for details.
+ * This comes with NO WARRANTY. See file License.txt for details.
  *
  * Author:  Jens Gulden
  */
@@ -24,7 +21,6 @@ import java.util.*;
  * and the Java classes implementing <code>JJackAudioProcessor</code>.
  *  
  * @author  Jens Gulden
- * @version  0.2
  */
 public class JJackSystem implements JJackConstants {
 
@@ -35,7 +31,7 @@ public class JJackSystem implements JJackConstants {
     /**
      * JJack version number.
      */
-    public static final String VERSION = "0.2";
+    public static final String VERSION = "0.3";
 
     /**
      * Flag for debug mode.

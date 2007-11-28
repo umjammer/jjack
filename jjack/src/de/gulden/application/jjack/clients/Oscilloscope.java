@@ -1,19 +1,16 @@
 /*
  * Project: JJack - Java bridge API for the JACK Audio Connection Kit
- * Class:   de.gulden.application.jjack.clients.Oscillator
- * Version: 0.2
- *
- * Date:    2004-11-16
+ * Class:   de.gulden.application.jjack.clients.Oscilloscope
  *
  * Licensed under the GNU Lesser General Public License (LGPL).
- * This comes with NO WARRANTY. See file license.txt for details.
+ * This comes with NO WARRANTY. See file License.txt for details.
  *
  * Author:  Jens Gulden
  */
 
 package de.gulden.application.jjack.clients;
 
-import de.gulden.application.jjack.clients.ui.OscillatorUI;
+import de.gulden.application.jjack.clients.ui.OscilloscopeUI;
 import de.gulden.framework.jjack.*;
 import java.io.Serializable;
 import javax.swing.*;
@@ -23,9 +20,8 @@ import java.beans.*;
  * JJack example client: Displays the audio waveform in realtime.
  *  
  * @author  Jens Gulden
- * @version  0.2
  */
-public class Oscillator extends JJackMonitor implements Serializable {
+public class Oscilloscope extends JJackMonitor implements Serializable {
 
     // ------------------------------------------------------------------------
     // --- fields                                                           ---
@@ -63,7 +59,7 @@ public class Oscillator extends JJackMonitor implements Serializable {
     /**
      * Constructor.
      */
-    public Oscillator() {
+    public Oscilloscope() {
         super();
     }
 
@@ -73,11 +69,11 @@ public class Oscillator extends JJackMonitor implements Serializable {
     // ------------------------------------------------------------------------
 
     public String getInfo() {
-        return "Oscillator - (c) Jens Gulden 2004";
+        return "Oscilloscope - (c) Jens Gulden 2004";
     }
 
     public void finalize() {
-        ((OscillatorUI)gui).finalize();
+        ((OscilloscopeUI)gui).finalize();
     }
 
     /**
@@ -135,11 +131,11 @@ public class Oscillator extends JJackMonitor implements Serializable {
     }
 
     public void process(JJackAudioEvent e) {
-        ((OscillatorUI)gui).output(e.getInput());
+        ((OscilloscopeUI)gui).output(e.getInput());
     }
 
     protected JComponent createUI() {
-        return new OscillatorUI(this);
+        return new OscilloscopeUI(this);
     }
 
-} // end Oscillator
+} // end Oscilloscope

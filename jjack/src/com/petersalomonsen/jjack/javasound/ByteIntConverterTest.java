@@ -1,17 +1,14 @@
-package com.petersalomonsen.jjack.javasound;
 /*
  * Project: JJack - Java bridge API for the JACK Audio Connection Kit
  * Class:   ByteIntConverterTest
- * Version: 0.3
- *
- * Date:    2007-05-06
  *
  * Licensed under the GNU Lesser General Public License (LGPL).
- * This comes with NO WARRANTY. See file license.txt for details.
+ * This comes with NO WARRANTY. See file License.txt for details.
  *
  * Author:  Peter Johan Salomonsen
  */
 
+package com.petersalomonsen.jjack.javasound;
 
 import javax.sound.sampled.AudioFormat;
 

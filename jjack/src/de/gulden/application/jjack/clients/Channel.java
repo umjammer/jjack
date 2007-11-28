@@ -1,12 +1,9 @@
 /*
  * Project: JJack - Java bridge API for the JACK Audio Connection Kit
  * Class:   de.gulden.application.jjack.clients.Channel
- * Version: 0.2
- *
- * Date:    2004-11-16
  *
  * Licensed under the GNU Lesser General Public License (LGPL).
- * This comes with NO WARRANTY. See file license.txt for details.
+ * This comes with NO WARRANTY. See file License.txt for details.
  *
  * Author:  Jens Gulden
  */
@@ -23,10 +20,9 @@ import java.nio.FloatBuffer;
  * JJack example client: Selects one channel from a multi-channel input and
  * routes it to the mono output channel #0.
  * The typical operating scenario for this is to start a monitor chain
- * with selecting which channel to display by e.g. an Oscillator.
+ * with selecting which channel to display by e.g. an Oscilloscope.
  *  
  * @author  Jens Gulden
- * @version  0.2
  */
 public class Channel extends JJackClient implements ChangeListener {
 

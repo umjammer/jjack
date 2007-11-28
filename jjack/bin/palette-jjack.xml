@@ -14,7 +14,7 @@
 	<item>de.gulden.application.jjack.clients.Socket</item>
 	<item>de.gulden.application.jjack.clients.Gain</item>
 	<item>de.gulden.application.jjack.clients.VU</item>
-	<item>de.gulden.application.jjack.clients.Oscillator</item>
+	<item>de.gulden.application.jjack.clients.Oscilloscope</item>
 	<item>de.gulden.application.jjack.clients.Delay</item>
 	<item>de.gulden.application.jjack.clients.Gate</item>
 	<item>de.gulden.application.jjack.clients.Channel</item>

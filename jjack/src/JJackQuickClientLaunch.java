@@ -1,3 +1,13 @@
+/*
+ * Project: JJack - Java bridge API for the JACK Audio Connection Kit
+ * Class:   JJackQuickClientLaunch
+ *
+ * Licensed under the GNU Lesser General Public License (LGPL).
+ * This comes with NO WARRANTY. See file License.txt for details.
+ *
+ * Author:  Peter Johan Salomonsen
+ */
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -5,19 +15,6 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import de.gulden.framework.jjack.JJackAudioProcessor;
-
-/*
- * Project: JJack - Java bridge API for the JACK Audio Connection Kit
- * Class:   JJackQuickClientLaunch
- * Version: 0.3
- *
- * Date:    2007-04-09
- *
- * Licensed under the GNU Lesser General Public License (LGPL).
- * This comes with NO WARRANTY. See file license.txt for details.
- *
- * Author:  Peter Johan Salomonsen
- */
 
 /**
  * Quick launcher class for launching built in jjack clients out of the box...

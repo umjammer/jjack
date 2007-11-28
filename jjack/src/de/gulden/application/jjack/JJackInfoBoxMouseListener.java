@@ -1,12 +1,9 @@
 /*
  * Project: JJack - Java bridge API for the JACK Audio Connection Kit
  * Class:   de.gulden.application.jjack.JJackInfoBoxMouseListener
- * Version: 0.2
- *
- * Date:    2004-11-16
  *
  * Licensed under the GNU Lesser General Public License (LGPL).
- * This comes with NO WARRANTY. See file license.txt for details.
+ * This comes with NO WARRANTY. See file License.txt for details.
  *
  * Author:  Jens Gulden
  */
@@ -23,7 +20,6 @@ import javax.swing.JPopupMenu;
  * MouseListener class to handle info-box menu and displaying when right-clicking on a client's panel.
  *  
  * @author  Jens Gulden
- * @version  0.2
  */
 class JJackInfoBoxMouseListener extends MouseAdapter implements ActionListener {
 
