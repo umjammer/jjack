@@ -1,11 +1,12 @@
-Version 0.3, 2007-11-??
+Version 0.3, 2007-12-30
 ------------------------------------------------------------------------------
-- (JG)  updated documentation, web-site and readme
+- (JG)  added binary libjjack.jnilib for Mac OS, thanks to Stéphane Letz
+- (JG)  updated documentation, web-site and readme-file
 - (JG)  stripped version and date information from source-files in CVS
         (will be added to the archive's sources at build-time)
 - (JG)  renamed 'Oscillator' to 'Oscilloscope'
 - (JG)  old changelog information from Readme.txt moved to CHANGELOG,
-        continue recording of changes here
+        renamed Readme.txt to README, License.txt to LICENSE.
 - (PJL) error messages if the native library cannot be loaded properly        
 - (PJS) Relative basedir in build.xml
 - (PJS) Use JAVA_HOME environment variable for ant build java dependencies. Example from shell: JAVA_HOME=/usr/lib/jvm/java-1.5.0-sun ant all

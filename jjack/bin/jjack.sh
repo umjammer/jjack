@@ -4,7 +4,7 @@
 #
 
 ### Please adopt these paths to your configuration: ###
-JJACK_HOME=/usr/java/jjack-0_3
+JJACK_HOME=/usr/java/jjack-0.3
 SYSTEM=i386/Linux
 # (other systems than i386/Linux may need manual compilation of libjjack.c)
 ##############################################

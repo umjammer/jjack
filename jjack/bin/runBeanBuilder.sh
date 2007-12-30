@@ -7,7 +7,7 @@
 
 ### Please adopt these paths to your configuration: ###
 BB_HOME=/usr/java/beanbuilder-1_0-beta
-JJACK_HOME=/usr/java/jjack-0_3
+JJACK_HOME=/usr/java/jjack-0.3
 SYSTEM=i386/Linux
 # (other systems than i386/Linux need manual compilation of libjjack.c)
 ##############################################

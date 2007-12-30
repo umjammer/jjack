@@ -3,7 +3,7 @@
  * Class:   de.gulden.application.jjack.clients.VU
  *
  * Licensed under the GNU Lesser General Public License (LGPL).
- * This comes with NO WARRANTY. See file License.txt for details.
+ * This comes with NO WARRANTY. See file LICENSE for details.
  *
  * Author:  Jens Gulden
  */

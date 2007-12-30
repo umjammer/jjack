@@ -3,7 +3,7 @@
  * Class:   de.gulden.util.nio.FifoFloat
  *
  * Licensed under the GNU Lesser General Public License (LGPL).
- * This comes with NO WARRANTY. See file License.txt for details.
+ * This comes with NO WARRANTY. See file LICENSE for details.
  * Note: This utility class is only provided for compiling JJack,
  * it is not part of JJack's CVS tree.
  *

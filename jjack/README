@@ -1,13 +1,12 @@
------------------------------------------------------------------------------
-JJack 0.3 - Jack-to-Java audio driver and bridge API
+------------------------------------------------------------------------------
+JJack 0.3 - Jack-to-Java Audio Driver and Bridge API
 Copyright (c) Jens Gulden and others.
 Distributed under the GNU Lesser General Public License (LGPL).
-This software comes with NO WARRANTY. See file License.txt for details.
------------------------------------------------------------------------------
+This software comes with NO WARRANTY. See file LICENSE for details.
+------------------------------------------------------------------------------
 
 Quick Installation
-------------------
-
+------------------------------------------------------------------------------
 Unpack the distribution archive and add <jjack>/lib/jjack.jar to the
 classpath. Then invoke any Java program with the additional parameter
 -Djava.library.path=<jjack>/lib/i386/Linux (according to your system).
@@ -15,7 +14,7 @@ An audio device "JJack" will show up in the list of available Java Sound
 mixer devices. 
 
 Detailed Installation
----------------------
+------------------------------------------------------------------------------
 Unpack the distribution archive jjack-0_3.tgz to /usr/java. A directory 
 /usr/java/jjack-0_3 will be created. You can also choose a different
 directory, in that case the absolute path values in the shell-scripts 
@@ -49,7 +48,7 @@ and run the daemon, see the JACK user documentation for details
 (http://www.djcj.org/LAU/jack/).
 
 Tested on
----------
+------------------------------------------------------------------------------
 - Debian 3.0 unstable, kernel 2.4.24, jackd 0.94.0. libjack-0.80.0.so.0.0.23,
   ALSA 1.0.2, Sun-J2SE SDK 1.4.2_03, both running jackd as root with
   realtime-support, and as ordinary user without realtime-support.
