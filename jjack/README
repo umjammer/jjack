@@ -11,13 +11,13 @@ Unpack the distribution archive and add <jjack>/lib/jjack.jar to the
 classpath. Then invoke any Java program with the additional parameter
 -Djava.library.path=<jjack>/lib/i386/Linux (according to your system).
 An audio device "JJack" will show up in the list of available Java Sound
-mixer devices. 
+mixer devices.
 
 Detailed Installation
 ------------------------------------------------------------------------------
-Unpack the distribution archive jjack-0_3.tgz to /usr/java. A directory 
-/usr/java/jjack-0_3 will be created. You can also choose a different
-directory, in that case the absolute path values in the shell-scripts 
+Unpack the distribution archive jjack-0.3.tar.gz to /usr/java. A directory
+/usr/java/jjack-0.3 will be created. You can also choose a different
+directory, in that case the absolute path values in the shell-scripts
 bin/jjack.sh and bin/runBeanBuilder.sh need to be adopted to your choice.
 
 The native bridge library libjjack.so (on Linux systems) needs to be 
@@ -35,16 +35,16 @@ There are two ways to make sure the JVM can load the native bridge library:
   "-Djava.library.path=<jjack-install-dir>/lib/i386/Linux" to the invocation
   command.
 
-Note: The current version includes a pre-compiled binary library for 
-i386-Linux. To run JJack on different platforms, the source files libjjack.c 
-and libjjack.h need to be compiled on your system. Please send a copy of the 
-binary and a description of your compilation process if you succeed in running 
-JJack on different platforms.
+Note: The current version includes pre-compiled binary libraries for
+i386-Linux, amd64-Linux and i386/ppc-Mac OS. To run JJack on different
+platforms, the source files libjjack.c and libjjack.h need to be compiled on
+your system. Please send a copy of the binary and a description of your
+compilation process if you succeed in running JJack on different platforms.
 
 Before using JJack, don't forget to start the JACK daemon. 
 This is either done by manually invoking jackd, or by configuring the system
-to start up jackd at boot time. There are several alternative ways to configure
-and run the daemon, see the JACK user documentation for details
+to start up jackd at boot time. There are several alternative ways to
+configure and run the daemon, see the JACK user documentation for details
 (http://www.djcj.org/LAU/jack/).
 
 Tested on
