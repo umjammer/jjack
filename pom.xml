@@ -1,0 +1,216 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>de.gulden</groupId>
+  <artifactId>jjack</artifactId>
+  <version>0.3.1</version>
+
+  <distributionManagement>
+    <repository>
+      <id>bintray</id>
+      <name>umjammer-maven</name>
+      <url>https://api.bintray.com/maven/umjammer/maven/jjack/;publish=1</url>
+    </repository>
+  </distributionManagement>
+
+  <profiles>
+    <profile>
+      <id>mac</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>native-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <configuration>
+              <javahClassNames>
+                <javahClassName>de.gulden.framework.jjack.JJackSystem</javahClassName>
+              </javahClassNames>
+              <javahSearchJNIFromDependencies>false</javahSearchJNIFromDependencies>
+              <!-- | Add jdk include directories to system include path | Override 
+                ${jkdIncludePath} If your jdk does not conform to Sun JDK layout -->
+              <javahOS>darwin</javahOS>
+              <compilerProvider>generic-classic</compilerProvider>
+              <compilerStartOptions>
+                <compilerStartOption>
+                  -g -Wall -O2 -fomit-frame-pointer -fPIC
+                  -I/usr/local/include/jack
+                  -arch x86_64
+                </compilerStartOption>
+              </compilerStartOptions>
+              <linkerStartOptions>
+                <linkerStartOption>
+                  -dynamiclib -arch x86_64
+                  -L/usr/local/lib -ljack
+                </linkerStartOption>
+              </linkerStartOptions>
+              <linkerFinalName></linkerFinalName>
+            </configuration>
+            <executions>
+              <execution>
+                <id>daylib</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>javah</goal>
+                  <goal>compile</goal>
+                  <goal>link</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>
+                      <!-- relative to your project directory -->
+                      <directory>src/main/native</directory>
+                      <includes>
+                        <include>libjjack.c</include>
+                      </includes>
+                    </source>
+                  </sources>
+                  <linkerEndOptions>
+                    <linkerEndOption>-o ${project.build.directory}/libjjack.dylib</linkerEndOption>
+                  </linkerEndOptions>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <artifactId>maven-install-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>install-library</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>install-file</goal>
+                </goals>
+                <configuration>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>${project.artifactId}</artifactId>
+                  <version>${project.parent.version}</version>
+                  <packaging>dylib</packaging>
+                  <file>${project.build.directory}/libjjack.dylib</file>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <!-- because of maven deploy-file uploads source, jar also -->
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.6.0</version>
+            <executions>
+              <execution>
+                <id>deploy-library</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>mvn</executable>
+                  <arguments>
+                    <argument>deploy:deploy-file</argument>
+                    <argument>-DgroupId=${project.groupId}</argument>
+                    <argument>-DartifactId=${project.artifactId}</argument>
+                    <argument>-Dversion=${project.parent.version}</argument>
+                    <argument>-Dpackaging=dylib</argument>
+                    <argument>-Dfile=${project.build.directory}/libjjack.dylib</argument>
+                    <argument>-DgeneratePom=false</argument>
+                    <argument>-DrepositoryId=bintray</argument>
+                    <argument>-Durl=https://api.bintray.com/maven/umjammer/maven/jjack/</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+          <encoding>UTF-8</encoding>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.0</version>
+        <configuration>
+          <forkMode>always</forkMode>
+          <argLine>
+            -Djava.library.path=${project.build.directory}
+          </argLine>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+    <repository>
+      <id>umjammer-mvn-repo</id>
+      <url>https://raw.github.com/umjammer/umjammer/mvn-repo/</url>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jaudiolibs</groupId>
+      <artifactId>audioservers-jack</artifactId>
+      <version>2.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.media</groupId>
+      <artifactId>jmf</artifactId>
+      <version>2.1.1e</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk16</artifactId>
+      <version>1.46</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.11</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.3.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.3.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jaudiolibs</groupId>
+      <artifactId>jnajack</artifactId>
+      <version>1.4.0</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

@@ -15,8 +15,8 @@
  *                   - Some ints are cast to jsize which is long on 64 bit systems (see
  *                     ftp://www6.software.ibm.com/software/developer/jdk/64bitporting/64BitJavaPortingGuide.pdf)
  *                   - The allocation of inf->byteBufferArray[mode] is made outside the loop
- *                     over ports. This avoids a null pointer exception in Java when there are
- *                     zero ports (eg for output on a "consumer only" process).		
+?*                     over ports. This avoids a null pointer exception in Java when there are
+?*                     zero ports (eg for output on a "consumer only" process).		
  * 
  * Possible compile commands:
  *
@@ -32,7 +32,7 @@
 #include <errno.h>
 #include <jni.h>
 #include <jack.h>
-#include "libjjack.h"
+#include "de_gulden_framework_jjack_JJackSystem.h"
 
 /*
  * Maximum number of ports to be allocated. 
@@ -325,7 +325,7 @@ int process(jack_nframes_t nframes, void *arg) {
         err = (*jvm)->AttachCurrentThread(jvm, &inf->env, NULL); /* writes env-pointer into inf->env */
         if (err != 0) {
             printf("FATAL: cannot attach JACK thread to JVM\n");
-            return;
+            return 0;
         }
         env = inf->env;
         /* get handle to class ByteBuffer */
