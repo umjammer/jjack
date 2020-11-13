@@ -90,7 +90,7 @@
                 <configuration>
                   <groupId>${project.groupId}</groupId>
                   <artifactId>${project.artifactId}</artifactId>
-                  <version>${project.parent.version}</version>
+                  <version>${project.version}</version>
                   <packaging>dylib</packaging>
                   <file>${project.build.directory}/libjjack.dylib</file>
                 </configuration>
@@ -116,7 +116,7 @@
                     <argument>deploy:deploy-file</argument>
                     <argument>-DgroupId=${project.groupId}</argument>
                     <argument>-DartifactId=${project.artifactId}</argument>
-                    <argument>-Dversion=${project.parent.version}</argument>
+                    <argument>-Dversion=${project.version}</argument>
                     <argument>-Dpackaging=dylib</argument>
                     <argument>-Dfile=${project.build.directory}/libjjack.dylib</argument>
                     <argument>-DgeneratePom=false</argument>
