@@ -15,5 +15,6 @@ jobs:
         java-version: 1.8
     - name: Build with Maven
       run: |
+        brew install jack
         mkdir tmp
         mvn -B package --file pom.xml

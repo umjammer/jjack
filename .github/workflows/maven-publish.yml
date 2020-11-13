@@ -18,6 +18,7 @@ jobs:
 
     - name: Build with Maven
       run: |
+        brew install jack
         mkdir tmp
         mvn -B package --file pom.xml
 
